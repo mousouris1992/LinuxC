@@ -43,6 +43,7 @@ int main(int argc , char * argv[])
     srand(time(NULL));
     PRODUCT_ARGS product_args[count];
 
+    printf("\n--Creating threads ...");
     for(int i = 0; i<count; i++)
     {
         product_args[i].a  = rand()%20 + 1;
@@ -51,9 +52,13 @@ int main(int argc , char * argv[])
 
         if ( pthread_create(&threads[i] , NULL , mult , &product_args[i]) != 0)
         {
-            printf("\n-Error : Failed to create thread!");
+            printf("\n-Error : Failed to create thread#%i!" , i);
             exit(-1);
         }
+
+        printf("\n     --Created thread--);
+        printf("\n       -Thread id : %i",i);
+        printf("\n       -Arguments { %i , %i }" , product_args[i].a , product_args[i].b);
     }
 
     for(int i = 0; i<count; i++)
@@ -63,6 +68,7 @@ int main(int argc , char * argv[])
             printf("\n-Error : Failed to join() thread!");
             exit(-1);
         }
+        printf("\n--Joining() thread#%i" , i);
     }
 
 
