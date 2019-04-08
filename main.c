@@ -17,12 +17,13 @@ void * mult(void * f_args)
 
     printf("\n     ~Thread : (%i) * (%i) = %i\n\n" , args->a , args->b , result);
     pthread_exit(NULL);
+
 }
 
 int main(int argc , char * argv[])
 {
 
-    printf("\n-Hello from Main Thread\n");
+    printf("\n-Hello from Main Thread####\n");
 
     PRODUCT_ARGS product_args;
     product_args.a = 10;
