@@ -1,6 +1,7 @@
+#include <pthread.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 typedef struct PRODUCT_ARGS
 {
@@ -14,7 +15,7 @@ void * mult(void * f_args)
     PRODUCT_ARGS * args = (PRODUCT_ARGS *)f_args;
     int result = args->a * args->b;
 
-    printf("\n     ~Thread : (%i) * (%i) = %i" , args->a , args->b , result);
+    printf("\n     ~Thread : (%i) * (%i) = %i\n\n" , args->a , args->b , result);
     pthread_exit(NULL);
 }
 
