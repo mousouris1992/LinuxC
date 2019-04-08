@@ -26,8 +26,8 @@ int main(int argc , char * argv[])
     printf("\n\n ----------- Main -----------\n");
 
     PRODUCT_ARGS product_args;
-    product_args.a = 10;
-    product_args.b = 5;
+    product_args.a = 4;
+    product_args.b = 32;
 
     pthread_t thread;
     if ( pthread_create(&thread , NULL , mult , &product_args) != 0)
