@@ -18,7 +18,7 @@ pthread_cond_t countThresholdCondition;
 
 enum Operation
 {
-    
+
     mutex_lock,
     mutex_unlock,
     thread_cond_wait,
@@ -52,6 +52,24 @@ void checkOperationStatus(enum Operation op , int rc , int return_type)
         break;
 
         case thread_cond_signal : op_name = "thread_cond_signal()";
+        break;
+
+        case thread_create : op_name = "thread_create()";
+        break;
+
+        case thread_join :  op_name = "thread_join()";
+        break;
+
+        case mutex_init : op_name = "mutex_init()";
+        break;
+
+        case mutex_destroy : op_name = "mutex_destroy()";
+        break;
+
+        case thread_cond_init : op_name = "thread_cond_init()";
+        break;
+
+        case thread_cond_destroy : op_name = "thread_cond_destroy()";
         break;
 
     }
