@@ -8,6 +8,7 @@ typedef struct PRODUCT_ARGS
 {
     int a;
     int b;
+    int Id;
 
 }PRODUCT_ARGS;
 
@@ -16,7 +17,7 @@ void * mult(void * f_args)
     PRODUCT_ARGS * args = (PRODUCT_ARGS *)f_args;
     int result = args->a * args->b;
 
-    printf("\n     ~Thread : (%i) * (%i) = %i\n\n" , args->a , args->b , result);
+    printf("\n     ~Thread#%i : (%i) * (%i) = %i\n\n" , args->Id, args->a , args->b , result);
     pthread_exit(NULL);
 
 }
@@ -54,13 +55,15 @@ int main(int argc , char * argv[])
         exit(-1);
     }
     */
+
     srand(time(NULL));
     PRODUCT_ARGS product_args[count];
 
     for(int i = 0; i<count; i++)
     {
-        product_args[i].a = rand()%20 + 1;
-        product_args[i].b = rand()%20 + 1;
+        product_args[i].a  = rand()%20 + 1;
+        product_args[i].b  = rand()%20 + 1;
+        product_args[i].Id = i;
 
         if ( pthread_create(&threads[i] , NULL , mult , &product_args[i]) != 0)
         {
