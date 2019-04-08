@@ -29,16 +29,32 @@ int main(int argc , char * argv[])
     product_args.a = 4;
     product_args.b = 32;
 
-    pthread_t thread;
-    if ( pthread_create(&thread , NULL , mult , &product_args) != 0)
+    pthread_t thread1 , thread2;
+    if ( pthread_create(&thread1 , NULL , mult , &product_args) != 0)
     {
-        printf("\n-Error : Failed to create thread!");
+        printf("\n-Error : Failed to create thread1!");
         exit(-1);
     }
 
-    if ( pthread_join(thread , NULL) != 0)
+    PRODUCT_ARGS product_args2;
+    product_args2.a = 10;
+    product_args2.b = 5;
+
+    if ( pthread_create(&thread2 , NULL , mult , &product_args2) !=0)
     {
-        printf("\n-Error : Failed to join() thread!");
+        printf("\n-Error : Failed to create thread2!");
+        exit(-1);
+    }
+
+    if ( pthread_join(thread1 , NULL) != 0)
+    {
+        printf("\n-Error : Failed to join() thread1!");
+        exit(-1);
+    }
+
+    if ( pthread_join(thread2 , NULL) != 0)
+    {
+        printf("\n-Error : Failed to join() thread2!");
         exit(-1);
     }
 
