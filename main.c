@@ -30,7 +30,7 @@ int main(int argc , char * argv[])
     product_args.b = 32;
 
     //pthread_t thread1 , thread2;
-    pthread_t threads * = malloc(2 * sizeof(pthread_t));
+    pthread_t * threads = malloc(2 * sizeof(pthread_t));
 
     if ( pthread_create(&threads[0] , NULL , mult , &product_args) != 0)
     {
@@ -61,7 +61,7 @@ int main(int argc , char * argv[])
     }
 
     free(threads);
-    
+
     printf("\n");
     return 0;
 }
