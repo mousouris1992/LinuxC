@@ -35,7 +35,7 @@ void checkOperationStatus(const char * operation , int rc)
 
 }
 
-void checkOperationStatus2(int op , int rc)
+void checkOperationStatus(int op , int rc)
 {
     char * op_name;
     switch(op)
@@ -82,7 +82,7 @@ void * increaseCount(void *t)
 	int rc;
 
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus("mutex_lock()" , rc);
+    checkOperationStatus(mutex_lock , rc);
 
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
