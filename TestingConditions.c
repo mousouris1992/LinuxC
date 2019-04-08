@@ -184,36 +184,33 @@ int main(int argc, char *argv[])
 	pthread_t threads[3];
 
   	/*arxikopoiisi tou mutex kai tou condition*/
-  	if ( (rc = pthread_mutex_init(&countMutex, NULL)) != 0)
+  	if ((rc = pthread_mutex_init(&countMutex, NULL)) != 0)
     {
     	printf("ERROR: return code from pthread_mutex_init() is %d\n", rc);
        	exit(-1);
 	}
 
-  	rc = pthread_cond_init(&countThresholdCondition, NULL);
-	if (rc != 0)
+  	if ((rc = pthread_cond_init(&countThresholdCondition, NULL)) != 0) ;
     {
     	printf("ERROR: return code from pthread_cond_init() is %d\n", rc);
        	exit(-1);
 	}
 
 	//arxikopoiisi olwn twn threads
-  	rc = pthread_create(&threads[0], NULL, doubleCountVariable, &t1);
-	if (rc != 0)
+  	;
+	if ((rc = pthread_create(&threads[0], NULL, doubleCountVariable, &t1)) !=0)
     {
     	printf("ERROR: return code from pthread_create() is %d\n", rc);
        	exit(-1);
 	}
 
-  	rc = pthread_create(&threads[1], NULL, increaseCount, &t2);
-	if (rc != 0)
+  	if((rc = pthread_create(&threads[1], NULL, increaseCount, &t2)) !=0)
     {
     	printf("ERROR: return code from pthread_create() is %d\n", rc);
        	exit(-1);
 	}
 
-  	rc = pthread_create(&threads[2], NULL, increaseCount, &t3);
-	if (rc != 0)
+  	if((rc = pthread_create(&threads[2], NULL, increaseCount, &t3)) !=0)
     {
     	printf("ERROR: return code from pthread_create() is %d\n", rc);
        	exit(-1);
@@ -223,8 +220,7 @@ int main(int argc, char *argv[])
 	/*join gia ola ta threads.*/
   	for (int i = 0; i < NUM_THREADS; i++)
     {
-    	rc = pthread_join(threads[i], &status);
-		if (rc != 0)
+    	if((rc = pthread_join(threads[i], &status))!=0)
         {
 			printf("ERROR: return code from pthread_join() is %d\n", rc);
 			exit(-1);
@@ -237,15 +233,13 @@ int main(int argc, char *argv[])
   	printf ("Main(): Waited for %d threads to finish. Final value of count = %d. Done.\n", NUM_THREADS, count);
 
   	/*"katastrofi" mutex kai condition*/
-  	rc = pthread_mutex_destroy(&countMutex);
-	if (rc != 0)
+  	if((rc = pthread_mutex_destroy(&countMutex))!=0)
     {
 		printf("ERROR: return code from pthread_mutex_destroy() is %d\n", rc);
 		exit(-1);
 	}
 
- 	rc = pthread_cond_destroy(&countThresholdCondition);
-	if (rc != 0)
+ 	if((rc = pthread_cond_destroy(&countThresholdCondition))!=0)
     {
 		printf("ERROR: return code from pthread_cond_destroy() is %d\n", rc);
 		exit(-1);
