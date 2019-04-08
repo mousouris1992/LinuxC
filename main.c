@@ -30,7 +30,9 @@ int main(int argc , char * argv[])
     product_args.b = 32;
 
     pthread_t thread1 , thread2;
-    if ( pthread_create(&thread1 , NULL , mult , &product_args) != 0)
+    pthread_t threads * = malloc(2 * sizeof(pthread_t));
+
+    if ( pthread_create(&threads[0] , NULL , mult , &product_args) != 0)
     {
         printf("\n-Error : Failed to create thread1!");
         exit(-1);
@@ -40,19 +42,19 @@ int main(int argc , char * argv[])
     product_args2.a = 10;
     product_args2.b = 5;
 
-    if ( pthread_create(&thread2 , NULL , mult , &product_args2) !=0)
+    if ( pthread_create(&threads[1] , NULL , mult , &product_args2) !=0)
     {
         printf("\n-Error : Failed to create thread2!");
         exit(-1);
     }
 
-    if ( pthread_join(thread1 , NULL) != 0)
+    if ( pthread_join(threads[0] , NULL) != 0)
     {
         printf("\n-Error : Failed to join() thread1!");
         exit(-1);
     }
 
-    if ( pthread_join(thread2 , NULL) != 0)
+    if ( pthread_join(threads[1] , NULL) != 0)
     {
         printf("\n-Error : Failed to join() thread2!");
         exit(-1);
