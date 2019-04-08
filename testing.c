@@ -1,16 +1,10 @@
+#include <stdio.h>
+
 int main(int argc, char * argv[])
 {
 
-    axaxa
-    ax
-    xa
-    axaxaxa
-    ax
-    ax
 
 
-
-    printf("hello testing");
-
+    printf("\nHello from Testing\n");
     return 0;
 }
