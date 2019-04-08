@@ -35,7 +35,7 @@ void checkOperationStatus(const char * operation , int rc)
 
 }
 
-void checkOperationStatus2(Operation op , int rc)
+void checkOperationStatus2(int op , int rc)
 {
     char * op_name;
     switch(op)
