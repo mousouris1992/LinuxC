@@ -29,7 +29,7 @@ int main(int argc , char * argv[])
 
 
     //pthread_t thread1 , thread2;
-    int count = 2;
+    int count = 10;
     pthread_t * threads = malloc(count * sizeof(pthread_t));
 
     /*
