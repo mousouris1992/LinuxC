@@ -17,13 +17,24 @@ pthread_mutex_t countMutex;
 pthread_cond_t countThresholdCondition;
 
 
-void checkStatus(const char * operation , int rc)
+void checkOperationStatus(const char * operation , int rc)
+{
+    if(rc != 0)
+    {
+        printf("\n-Error : Failed to %s | Return code : %i",operation , rc);
+        pthread_exit(&rc);
+    }
+
+}
+
+void checkThreadStatus(const char * operation , int rc)
 {
     if(rc != 0)
     {
         printf("\n-Error : Failed to %s | Return code : %i",operation , rc);
         exit(-1);
     }
+
 }
 
 void * increaseCount(void *t)
@@ -32,11 +43,9 @@ void * increaseCount(void *t)
 	int *threadId = (int *)t;
 	int rc;
 
-	if((rc = pthread_mutex_lock(&countMutex))!=0)
-    {
-		printf("ERROR: return code from pthread_mutex_lock() is %d\n", rc);
-		pthread_exit(&rc);
-	}
+	rc = pthread_mutex_lock(&countMutex);
+    checkOperationStatus("mutex_lock()" , rc);
+    
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
 	//otou se eidopoiisei ((xrisi while gia apofygi Spurious Wakeup http://en.wikipedia.org/wiki/Spurious_wakeup))
