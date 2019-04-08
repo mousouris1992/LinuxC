@@ -23,7 +23,7 @@ void * mult(void * f_args)
 int main(int argc , char * argv[])
 {
 
-    printf("\n-Hello from Main Thread####\n");
+    printf("\n\n ----------- Main -----------\n");
 
     PRODUCT_ARGS product_args;
     product_args.a = 10;
@@ -42,5 +42,6 @@ int main(int argc , char * argv[])
         exit(-1);
     }
 
+    printf("\n");
     return 0;
 }

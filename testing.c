@@ -2,10 +2,10 @@
 
 int main(int argc, char * argv[])
 {
+    printf("\n\n ----------- Testing -----------\n");
 
 
 
-    printf("\nHello from Testing3\n");
-    printf("\nReturning code : 0\n");
+    printf("\n");
     return 0;
 }
