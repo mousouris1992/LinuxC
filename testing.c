@@ -10,7 +10,7 @@ pthread_mutex_t mutexCount;
 
 void * incCounter(void * threadId)
 {
-    int *tId = (int*)threadId;
+    int *tid = (int*)threadId;
     int prevValue , rc;
 
     rc = pthread_mutex_lock(&mutexCount);
@@ -45,6 +45,7 @@ int main(int argc, char * argv[])
     int size = 5;
     pthread_t threads[size];
     int threadIds[size];
+    int rc;
 
     rc = pthread_mutex_init(&mutexCount , NULL);
     if(rc!=0)
@@ -56,7 +57,7 @@ int main(int argc, char * argv[])
     //
     for(int i = 0; i<size; i++)
     {
-        threadsId[i] = i ;
+        threadIds[i] = i ;
         printf("\n-Main : creating thread#%i" , i);
         rc = pthread_create(&threads[i] , NULL , incCounter , &threadIds[i]);
         if(rc!=0)
@@ -77,8 +78,10 @@ int main(int argc, char * argv[])
             exit(-1);
         }
 
-        printf("\n-- Counter value ")
     }
+
+    printf("\n\n-- Counter value after threads finished : %i", counter);
+
 
     printf("\n");
     return 0;
