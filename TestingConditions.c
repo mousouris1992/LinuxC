@@ -23,7 +23,7 @@ enum Operation
     thread_cond_wait,
     thread_cond_broadcast,
     thread_cond_signal
-}
+};
 
 void checkOperationStatus(const char * operation , int rc)
 {
@@ -35,7 +35,7 @@ void checkOperationStatus(const char * operation , int rc)
 
 }
 
-void checkThreadStatus(Operation op , int rc)
+void checkOperationStatus2(Operation op , int rc)
 {
     char * op_name;
     switch(op)
