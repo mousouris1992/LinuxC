@@ -28,7 +28,15 @@ int main(int argc , char * argv[])
     printf("\n\n ----------- Main -----------\n");
 
 
-    int count = 10;
+    int count;
+    if(argc < 2)
+    {
+        count = 10;
+    }
+    else
+    {
+        count = atoi(argv[1]);
+    }
     //pthread_t * threads = malloc(count * sizeof(pthread_t));
     pthread_t threads[count];
 
