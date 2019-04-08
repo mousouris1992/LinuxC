@@ -82,7 +82,7 @@ void * increaseCount(void *t)
 	int rc;
 
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus(mutex_lock , rc);
+    checkOperationStatus(Operation.mutex_lock , rc);
 
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
