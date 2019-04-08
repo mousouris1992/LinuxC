@@ -56,7 +56,7 @@ int main(int argc , char * argv[])
             exit(-1);
         }
 
-        printf("\n     --Created thread--);
+        printf("\n     --Created thread--");
         printf("\n       -Thread id : %i",i);
         printf("\n       -Arguments { %i , %i }" , product_args[i].a , product_args[i].b);
     }
