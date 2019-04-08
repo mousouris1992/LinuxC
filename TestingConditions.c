@@ -1,13 +1,8 @@
 /**
-	Ylopoiiste ena progromma to opoio tha dimiourgei 3 nea threads.
-	 Ta dyo prwta
-	tha ayksanoun mia metavliti count h opoia tha einai koini se ola.
-	Otan i 		timi tou counter ftasei mia sygkekrimeni timi (12)
-	tote to 3o thread tha
+	Ylopoiiste ena progromma to opoio tha dimiourgei 3 nea threads. Ta dyo prwta
+	tha ayksanoun mia metavliti count h opoia tha einai koini se ola. Otan i 		timi tou counter ftasei mia sygkekrimeni timi (12) tote to 3o thread tha
 	prepei na enimerwnetai gia ayti tin allagi kai na diplasiazei tin metavliti
 	count. To programma prepei na trexei mexris otou ta threads pou ayksanoun 		tin count kanoun 24 epanalipseis.
-
-
 	Aparaitites synartiseis tis pthread.h vivliothikis:
 	int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 		void *(*start_routine)(void*), void *arg);
@@ -55,8 +50,7 @@ void *increaseCount(void *t) {
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
 	//otou se eidopoiisei ((xrisi while gia apofygi Spurious Wakeup http://en.wikipedia.org/wiki/Spurious_wakeup))
 	while (isDoubleCounterThreadStarted == 0) {
-		printf("increaseCount(): thread %d, the thread that will double
-		the counter has not started about to wait...\n", *threadId);
+		printf("increaseCount(): thread %d, the thread that will double the counter has not started about to wait...\n", *threadId);
 		rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
 		if (rc != 0) {
 			printf("ERROR: return code from pthread_cond_wait() is %d\n", rc);
@@ -84,8 +78,7 @@ void *increaseCount(void *t) {
 		//molis ftaseis to katallilo limit steile sima gia na ksypnisei i methodos
 		//pou tha diplasiasei ton counter.
 		if (count == COUNT_LIMIT) {
-      			printf("increaseCount(): thread %d, count = %d
-				Threshold reached.\n", *threadId, count);
+      			printf("increaseCount(): thread %d, count = %d  Threshold reached.\n", *threadId, count);
 
 			//ena mono thread prpepei na eidopoiisei to thread tou
 			//diplasiasmou.
@@ -96,15 +89,13 @@ void *increaseCount(void *t) {
 					pthread_exit(&rc);
 				}
 
-      				printf("increaseCount(): thread %d just
-					sent signal to the doubleCounter thread.\n", *threadId);
+      				printf("increaseCount(): thread %d just sent signal to the doubleCounter thread.\n", *threadId);
 				signalSent = 1;
 			}
 
 			//perimene mexri na ginei o diplasiasmos (xrisi while gia
 			//apofygi Spurious Wakeup
-			while (isDoubleCounterThreadFinished == 0)
-			{
+			while (isDoubleCounterThreadFinished == 0) {
 				printf("increaseCount(): thread %d, waiting for signal.\n", *threadId);
 				rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
 				if (rc != 0) {
@@ -112,7 +103,7 @@ void *increaseCount(void *t) {
 					pthread_exit(&rc);
 				}
 			}
-      	}
+      		}
 
 		count++;
 
@@ -154,12 +145,10 @@ void *doubleCountVariable(void *t) {
 	printf("doubleCountVariable(): thread %d informed the other threads\n", *threadId);
 
 	//oso den ikanopoieitai i synthiki perimene (xrisi while gia apofygi Spurious Wakeup http://en.wikipedia.org/wiki/Spurious_wakeup)
-	while (count < COUNT_LIMIT)
-	 {
+	while (count < COUNT_LIMIT) {
 		printf("doubleCountVariable(): thread %d going into wait...\n", *threadId);
-    	rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
-		if (rc != 0)
-		{
+    		rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
+		if (rc != 0) {
 			printf("ERROR: return code from pthread_cond_wait() is %d\n", rc);
 			pthread_exit(&rc);
 		}
@@ -168,7 +157,7 @@ void *doubleCountVariable(void *t) {
 	}
 
 	count *= 2;
-    printf("doubleCountVariable(): thread %d count now = %d.\n", *threadId, count);
+    	printf("doubleCountVariable(): thread %d count now = %d.\n", *threadId, count);
 
 	isDoubleCounterThreadFinished = 1;
 	rc = pthread_cond_broadcast(&countThresholdCondition);
