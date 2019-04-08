@@ -16,14 +16,14 @@ int isDoubleCounterThreadStarted = 0;
 pthread_mutex_t countMutex;
 pthread_cond_t countThresholdCondition;
 
-enum Operation
+typedef enum Operation
 {
     mutex_lock,
     mutex_unlock,
     thread_cond_wait,
     thread_cond_broadcast,
     thread_cond_signal
-};
+}OPERATION;
 
 void checkOperationStatus(const char * operation , int rc)
 {
@@ -82,7 +82,7 @@ void * increaseCount(void *t)
 	int rc;
 
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus2(Operation.mutex_lock , rc);
+    checkOperationStatus2(OPERATION.mutex_lock , rc);
 
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
