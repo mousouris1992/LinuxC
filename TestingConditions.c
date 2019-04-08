@@ -25,7 +25,7 @@ enum Operation
     thread_cond_broadcast,
     thread_cond_signal,
     mutex_init,
-    thread_cond_int,
+    thread_cond_init,
     thread_create,
     thread_join,
     mutex_destroy,
@@ -97,7 +97,7 @@ void * increaseCount(void *t)
 	int rc;
 
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus2( mutex_lock , rc , 0);
+    checkOperationStatus( mutex_lock , rc , 0);
 
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
