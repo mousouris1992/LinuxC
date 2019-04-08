@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct PRODUCT_ARGS
 {
@@ -25,12 +26,17 @@ int main(int argc , char * argv[])
 
     printf("\n\n ----------- Main -----------\n");
 
+
+
+    //pthread_t thread1 , thread2;
+    int count = 2;
+    pthread_t * threads = malloc(count * sizeof(pthread_t));
+
+    /*
+
     PRODUCT_ARGS product_args;
     product_args.a = 4;
     product_args.b = 32;
-
-    //pthread_t thread1 , thread2;
-    pthread_t * threads = malloc(2 * sizeof(pthread_t));
 
     if ( pthread_create(&threads[0] , NULL , mult , &product_args) != 0)
     {
@@ -47,7 +53,32 @@ int main(int argc , char * argv[])
         printf("\n-Error : Failed to create thread2!");
         exit(-1);
     }
+    */
+    srand(time(NULL));
+    PRODUCT_ARGS product_args[count];
 
+    for(int i = 0; i<count; i++)
+    {
+        product_args[i].a = rand()%20 + 1;
+        product_args[i].b = rand()%20 + 1;
+
+        if ( pthread_create(&threads[i] , NULL , mult , &product_args[i]) != 0)
+        {
+            printf("\n-Error : Failed to create thread!");
+            exit(-1);
+        }
+    }
+
+    for(int i = 0; i<count; i++)
+    {
+        if ( pthread_join(threads[i] , NULL) != 0)
+        {
+            printf("\n-Error : Failed to join() thread!");
+            exit(-1);
+        }
+    }
+
+    /*
     if ( pthread_join(threads[0] , NULL) != 0)
     {
         printf("\n-Error : Failed to join() thread1!");
@@ -59,6 +90,7 @@ int main(int argc , char * argv[])
         printf("\n-Error : Failed to join() thread2!");
         exit(-1);
     }
+    */
 
     free(threads);
 
