@@ -18,24 +18,23 @@ pthread_cond_t countThresholdCondition;
 
 enum Operation
 {
+    
     mutex_lock,
     mutex_unlock,
     thread_cond_wait,
     thread_cond_broadcast,
-    thread_cond_signal
+    thread_cond_signal,
+    mutex_init,
+    thread_cond_int,
+    thread_create,
+    thread_join,
+    mutex_destroy,
+    thread_cond_destroy
+
 };
 
-void checkOperationStatus(const char * operation , int rc)
-{
-    if(rc != 0)
-    {
-        printf("\n-Error : Failed to %s | Return code : %i",operation , rc);
-        pthread_exit(&rc);
-    }
 
-}
-
-void checkOperationStatus2(enum Operation op , int rc)
+void checkOperationStatus(enum Operation op , int rc , int return_type)
 {
     char * op_name;
     switch(op)
@@ -60,20 +59,18 @@ void checkOperationStatus2(enum Operation op , int rc)
     if(rc != 0)
     {
         printf("\n-Error : Failed to %s | Return code : %i", op_name , rc);
-        exit(-1);
+        if(return_type == 1)
+        {
+            exit(-1);
+        }
+        else
+        {
+            pthread_exit(&rc);
+        }
     }
 
 }
 
-void checkThreadStatus(const char * operation , int rc)
-{
-    if(rc != 0)
-    {
-        printf("\n-Error : Failed to %s | Return code : %i",operation , rc);
-        exit(-1);
-    }
-
-}
 
 void * increaseCount(void *t)
 {
@@ -82,7 +79,7 @@ void * increaseCount(void *t)
 	int rc;
 
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus2( mutex_lock , rc);
+    checkOperationStatus2( mutex_lock , rc , 0);
 
 
 	//an to thread pou tha diplasiazei ton counter den exei ksekinisei perimene mexris
@@ -92,19 +89,19 @@ void * increaseCount(void *t)
 		printf("increaseCount(): thread %d, the thread that will double the counter has not started about to wait...\n", *threadId);
 
         rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
-        checkOperationStatus("thread_cond_wait()" , rc);
+        checkOperationStatus( thread_cond_wait , rc , 0);
 
 		printf("increaseCount(): thread %d, the thread that will double the counter has started.\n",*threadId);
 	}
 
 	rc = pthread_mutex_unlock(&countMutex);
-    checkOperationStatus("mutex_unlock()",rc);
+    checkOperationStatus( mutex_lock ,rc , 0);
 
 	for (int i=0; i < TCOUNT; i++)
     {
 		//lock to mutex gia na mporesei na allaksei xwris provlima twn count.
  		rc = pthread_mutex_lock(&countMutex);
-        checkOperationStatus("mutex_lock()",rc);
+        checkOperationStatus( mutex_lock ,rc , 0);
 
 
 		//molis ftaseis to katallilo limit steile sima gia na ksypnisei i methodos
@@ -118,7 +115,7 @@ void * increaseCount(void *t)
 			if (signalSent == 0)
             {
       			rc = pthread_cond_signal(&countThresholdCondition);
-				checkOperationStatus("thread_cond_signal()",rc);
+				checkOperationStatus(thread_cond_signal ,rc , 0);
 
       			printf("increaseCount(): thread %d just sent signal to the doubleCounter thread.\n", *threadId);
 				signalSent = 1;
@@ -130,7 +127,7 @@ void * increaseCount(void *t)
             {
 				printf("increaseCount(): thread %d, waiting for signal.\n", *threadId);
 				rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
-				checkOperationStatus("thread_cond_wait()",rc);
+				checkOperationStatus(thread_cond_wait ,rc , 0);
 			}
       	}
 
@@ -138,7 +135,7 @@ void * increaseCount(void *t)
 
 		printf("increaseCount(): thread %d, count = %d, unlocking mutex\n",*threadId, count);
     	rc = pthread_mutex_unlock(&countMutex);
-		checkOperationStatus("mutex_unlock()" , rc);
+		checkOperationStatus(mutex_unlock , rc , 0);
     }
 
 	pthread_exit(t);
@@ -154,14 +151,14 @@ void * doubleCountVariable(void *t)
 	printf("doubleCountVariable(): thread %d started.\n", *threadId);
 	int rc;
 	rc = pthread_mutex_lock(&countMutex);
-    checkOperationStatus("mutex_lock()" , rc);
+    checkOperationStatus(mutex_lock , rc , 0);
 
 	isDoubleCounterThreadStarted = 1;
 	printf("doubleCountVariable(): thread %d about to inform all other threads.\n", *threadId);
 
 	//eidopoiei ta alla threads oti exei ksekinisei.
 	rc = pthread_cond_broadcast(&countThresholdCondition);
-	checkOperationStatus("thread_cond_broadcast()" , rc);
+	checkOperationStatus( thread_cond_broadcast , rc , 0);
 
 	printf("doubleCountVariable(): thread %d informed the other threads\n", *threadId);
 
@@ -170,7 +167,7 @@ void * doubleCountVariable(void *t)
     {
 		printf("doubleCountVariable(): thread %d going into wait...\n", *threadId);
     	rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
-		checkOperationStatus("thread_cond_wait()" , rc);
+		checkOperationStatus(thread_cond_wait , rc , 0);
 
 		printf("doubleCountVariable(): thread %d Condition signal received.\n", *threadId);
 	}
@@ -180,13 +177,13 @@ void * doubleCountVariable(void *t)
 
 	isDoubleCounterThreadFinished = 1;
 	rc = pthread_cond_broadcast(&countThresholdCondition);
-    checkOperationStatus("thread_cond_broadcast()" , rc);
+    checkOperationStatus( thread_cond_broadcast , rc , 0);
 
 
 	printf("doubleCountVariable(): thread %d sent signal to increaseCount threads.\n", *threadId);
 
 	rc = pthread_mutex_unlock(&countMutex);
-	checkOperationStatus("mutex_unlock()" , rc);
+	checkOperationStatus( mutex_unlock , rc , 0);
 
 	pthread_exit(t);
 }
@@ -199,47 +196,31 @@ int main(int argc, char *argv[])
 	pthread_t threads[3];
 
   	/*arxikopoiisi tou mutex kai tou condition*/
-  	if ((rc = pthread_mutex_init(&countMutex, NULL)) != 0)
-    {
-    	printf("ERROR: return code from pthread_mutex_init() is %d\n", rc);
-       	exit(-1);
-	}
+  	rc = pthread_mutex_init(&countMutex, NULL);
+    checkOperationStatus(mutex_init , rc , 1);
 
-  	if ((rc = pthread_cond_init(&countThresholdCondition, NULL)) != 0) ;
-    {
-    	printf("ERROR: return code from pthread_cond_init() is %d\n", rc);
-       	exit(-1);
-	}
+  	rc = pthread_cond_init(&countThresholdCondition, NULL);
+    checkOperationStatus(thread_cond_init , rc , 1);
+
 
 	//arxikopoiisi olwn twn threads
-  	;
-	if ((rc = pthread_create(&threads[0], NULL, doubleCountVariable, &t1)) !=0)
-    {
-    	printf("ERROR: return code from pthread_create() is %d\n", rc);
-       	exit(-1);
-	}
+	rc = pthread_create(&threads[0], NULL, doubleCountVariable, &t1);
+	checkOperationStatus(thread_create , rc , 1);
 
-  	if((rc = pthread_create(&threads[1], NULL, increaseCount, &t2)) !=0)
-    {
-    	printf("ERROR: return code from pthread_create() is %d\n", rc);
-       	exit(-1);
-	}
+  	rc = pthread_create(&threads[1], NULL, increaseCount, &t2);
+    checkOperationStatus(thread_create , rc , 1);
 
-  	if((rc = pthread_create(&threads[2], NULL, increaseCount, &t3)) !=0)
-    {
-    	printf("ERROR: return code from pthread_create() is %d\n", rc);
-       	exit(-1);
-	}
+
+  	rc = pthread_create(&threads[2], NULL, increaseCount, &t3);
+    checkOperationStatus(thread_create , rc , 1);
+
 
 	void *status;
 	/*join gia ola ta threads.*/
   	for (int i = 0; i < NUM_THREADS; i++)
     {
-    	if((rc = pthread_join(threads[i], &status))!=0)
-        {
-			printf("ERROR: return code from pthread_join() is %d\n", rc);
-			exit(-1);
-		}
+    	rc = pthread_join(threads[i], &status);
+        checkOperationStatus(thread_join , rc , 1);
 
 		printf("Main(): Thread %d terminated successfully.\n", *(int *) status);
   	}
@@ -248,17 +229,14 @@ int main(int argc, char *argv[])
   	printf ("Main(): Waited for %d threads to finish. Final value of count = %d. Done.\n", NUM_THREADS, count);
 
   	/*"katastrofi" mutex kai condition*/
-  	if((rc = pthread_mutex_destroy(&countMutex))!=0)
-    {
-		printf("ERROR: return code from pthread_mutex_destroy() is %d\n", rc);
-		exit(-1);
-	}
+  	rc = pthread_mutex_destroy(&countMutex);
+    checkOperationStatus(mutex_destroy , rc , 1);
 
- 	if((rc = pthread_cond_destroy(&countThresholdCondition))!=0)
-    {
-		printf("ERROR: return code from pthread_cond_destroy() is %d\n", rc);
-		exit(-1);
-	}
+
+ 	rc = pthread_cond_destroy(&countThresholdCondition);
+    checkOperationStatus(thread_cond_destroy , rc , 1);
+
+
 
 	return 1;
 }
