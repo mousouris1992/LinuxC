@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 	pthread_t threads[3];
 
   	/*arxikopoiisi tou mutex kai tou condition*/
-  	if ( rc = pthread_mutex_init(&countMutex, NULL) != 0)
+  	if ( (rc = pthread_mutex_init(&countMutex, NULL)) != 0)
     {
     	printf("ERROR: return code from pthread_mutex_init() is %d\n", rc);
        	exit(-1);
