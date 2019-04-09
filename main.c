@@ -141,13 +141,9 @@ static int shared_var = 0;
 //
 //      Customer Service Functions
 //
-//--------------------------------------
+//-------------------------------------
 
-int getAvailableHandlers()
-{
-	//pthread_mutex_lock(&av_handler_mutex);
 
-}
 
 void * handleCustomer(void * customer)
 {
