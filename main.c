@@ -53,6 +53,7 @@ int av_customer_handlers = n_tel;
 typedef struct Customer
 {
 	pthread_t thread;
+
 	int Id;
 
 }
@@ -83,7 +84,12 @@ void * handleCustomer(void * customer)
 
 	Customer* cust = (Customer *)customer;
 	int tid = cust->Id;
-	int sec = getRandom(t_seatMin , t_seatMax);
+
+	struct timespec
+	t_start,
+	t_global_end,
+	t_wait_end;
+	clock_gettime(CLOCK_REALTIME , &t_start);
 
 	// customer enters the queue of service...
 	printf("\n\nCustomer#%i : enters the queue!" , tid);
@@ -107,6 +113,7 @@ void * handleCustomer(void * customer)
 		printf("\nCustomer#%i : Finally is his time to get handled..", tid);
 
 	}
+	clock_gettime(CLOCK_REALTIME , &t_wait_end);
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
@@ -132,13 +139,15 @@ void * handleCustomer(void * customer)
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
-    printf("\n-Report : A CustomerHandler is free , all customers in queue are being signaled!");
+    printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
 	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
 
 
 	mutex_unlock(&av_handler_mutex);
 
-
+	//
+	clock_gettime(CLOCK_REALTIME , &t_global_end);
+	
 	pthread_exit(cust->Id);
 }
 
