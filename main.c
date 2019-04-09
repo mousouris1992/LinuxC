@@ -77,7 +77,7 @@ void checkOperationStatus(enum Operation op ,  int rc , int return_type)
 
     if(rc != 0)
     {
-		printf("\n-Error : %s::Failed to %s | Return code : %i" , obj, op_name , rc);
+		printf("\n-Error : Failed to %s | Return code : %i"  op_name , rc);
         if(return_type == 1)
         {
             exit(-1);
