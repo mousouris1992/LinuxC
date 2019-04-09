@@ -112,7 +112,7 @@ int Transactions_counter = 0;
 int seatsPlan[n_seat];
 
 // customer handlers
-int av_customer_handlers = 8;
+int av_customer_handlers = n_tel;
 
 
 // customers variables
@@ -180,6 +180,8 @@ void * handleCustomer(void * customer)
 
 void Init(char * argv[])
 {
+	av_customer_handlers = n_tel;
+
 	int rc;
 	srand(time(NULL)); // randomize seed
 
