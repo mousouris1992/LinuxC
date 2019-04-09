@@ -221,13 +221,13 @@ int main(int argc, char *argv[])
     checkOperationStatus(thread_cond_init , rc , 1);
 
 
-	//arxikopoiisi olwn twn threads
+	// doubleCountVariable() thread
 	rc = pthread_create(&threads[0], NULL, doubleCountVariable, &t1);
 	checkOperationStatus(thread_create , rc , 1);
 
+    // incCounter() threads
   	rc = pthread_create(&threads[1], NULL, increaseCount, &t2);
     checkOperationStatus(thread_create , rc , 1);
-
 
   	rc = pthread_create(&threads[2], NULL, increaseCount, &t3);
     checkOperationStatus(thread_create , rc , 1);
@@ -244,12 +244,11 @@ int main(int argc, char *argv[])
   	}
 
 	//ektypwsi tis telikis timis tou count
-  	printf ("Main(): Waited for %d threads to finish. Final value of count = %d. Done.\n", NUM_THREADS, count);
+  	printf ("\nMain(): Waited for %d threads to finish. Final value of count = %d. Done.\n", NUM_THREADS, count);
 
-  	/*"katastrofi" mutex kai condition*/
+    // clean data ...
   	rc = pthread_mutex_destroy(&countMutex);
     checkOperationStatus(mutex_destroy , rc , 1);
-
 
  	rc = pthread_cond_destroy(&countThresholdCondition);
     checkOperationStatus(thread_cond_destroy , rc , 1);
