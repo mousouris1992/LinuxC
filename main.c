@@ -28,7 +28,7 @@ void checkStatus(void * data , enum Operation op , const char * obj , int return
 
 	switch(op)
 	{
-		case malloc :op_name = "malloc()";
+		case _malloc :op_name = "malloc()";
 		break;
 
 		case something :  op_name = "something()";
