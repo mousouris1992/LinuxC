@@ -137,7 +137,7 @@ pthread_mutex_t av_handler_mutex;
 pthread_cond_t av_handler_cond;
 
 // testing variables
-static int shared_var = 0;
+//static int shared_var = 0;
 
 //-------------------------------------
 //
