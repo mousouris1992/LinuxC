@@ -30,6 +30,8 @@ enum Operation
 //
 //-------------------------------------
 
+#define BILLION        1000000000L;
+
 #define n_seat         250
 #define n_tel          8
 #define n_seatMin      1
@@ -147,8 +149,8 @@ void * handleCustomer(void * customer)
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	double wait_time = (t_wait_end.tv_nsec - t_start.tv_nsec) + (t_wait_end.tv_nsec - t_start.tv_nsec) * 1000000000d;
-	double total_time = (t_global_end.tv_nsec - t_start.tv_nsec) + (t_global_end.tv_nsec - t_start.tv_nsec)* 1000000000d;
+	double wait_time = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
+	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
 
 	printf("\nwait time : %d ", wait_time);
