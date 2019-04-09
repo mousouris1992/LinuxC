@@ -147,13 +147,13 @@ void * handleCustomer(void * customer)
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	double wait_time = (t_wait_end.tv_sec - t_start.tv_sec)/1.000000000d;
-	double total_time = (t_global_end.tv_sec - t_start.tv_sec)/1.000000000d;
+	//double wait_time = (t_wait_end.tv_sec - t_start.tv_sec)/1.000000000d;
+	//double total_time = (t_global_end.tv_sec - t_start.tv_sec)/1.000000000d;
 
-	mutex_lock(mutex0);
-	printf("\n\n-Thread#%i [Report] : Wait time  = %d", tid ,wait_time);
-	printf("\n           [Report] : Total time = %d", total_time);
-	mutex_unlock(mutex0);
+	//mutex_lock(mutex0);
+	//printf("\n\n-Thread#%i [Report] : Wait time  = %d", tid ,wait_time);
+	//printf("\n           [Report] : Total time = %d", total_time);
+	//mutex_unlock(mutex0);
 
 	pthread_exit(cust->Id);
 }
