@@ -156,7 +156,7 @@ void * handleCustomer(void * customer)
 	//printf("\nwait time : %d ", total_time);
 	mutex_lock(mutex0);
 	printf("\n\n-Thread#%i [Report] : Wait time  = %f", tid ,wait_time);
-	printf("\n           [Report] : Total time = %f", total_time);
+	//printf("\n           [Report] : Total time = %f", total_time);
 	mutex_unlock(mutex0);
 
 	pthread_exit(cust->Id);
