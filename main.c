@@ -12,7 +12,10 @@ int main(int argc , char * argv[])
 
     srand(time(NULL)); // randomize seed
 
-    int random = rand()%100;
+    int high = 40;
+    int low = 20;
+
+    int random = (rand() % (high - low)) + low;
 
     printf("random : %i",random);
 
