@@ -141,7 +141,7 @@ static int shared_var = 0;
 //
 //      Customer Service Functions
 //
-//-------------------------------------
+//--------------------------------------
 
 int getAvailableHandlers()
 {
