@@ -28,7 +28,7 @@ enum Operation
 //
 //-------------------------------------
 
-int getRandomFrom(int min , int max)
+int getRandom(int min , int max)
 {
     return (rand()%(max - min) + min);
 }
@@ -122,7 +122,8 @@ typedef struct Customer
 	pthread_t thread;
 	int Id;
 
-}Customer;
+}
+Customer;
 
 int customers_count = 0;
 Customer * customers = 0;
@@ -139,6 +140,12 @@ pthread_mutex_t mutex0;
 
 void * handleCustomer(void * customer)
 {
+	Customer cust = (Customer *)customer;
+	int tid = customer->Id;
+
+	pthread_mutex_lock(&mutex0);
+	printf("\nHello from Thread#%i , going to wait for %i seconds..." , tid , getRandom(t_seatMin,t_seatMax));
+	pthread_mutex_unlock(&mutex0);
 
 	return 0;
 }
@@ -149,10 +156,11 @@ void * handleCustomer(void * customer)
 //
 //-------------------------------------
 
-void Init(char * arg0 , char * arg1)
+void Init(char * argv[])
 {
-	customers_count = atoi(arg0);
-	random_seed     = atoi(arg1);
+
+	customers_count = atoi(argv[1]);
+	random_seed     = atoi(argv[2]);
 
 	// Init customers
 	customers = malloc(customers_count * sizeof(Customer));
@@ -162,6 +170,10 @@ void Init(char * arg0 , char * arg1)
 		printf("\n--Exiting program..");
 		exit(-1);
 	}
+
+	// Init Mutexes && cond_variables
+	int rc = pthread_mutex_init(&mutex0 , NULL);
+	checkOperationStatus(mutex_init , "mutex0" , rc , 1);
 
 }
 
@@ -187,7 +199,7 @@ int main(int argc , char * argv[])
         exit(-1);
     }
 
-	Init(argv[1] , argv[2]);
+	Init(argv);
 
 	int rc;
 	for(int i = 0; i<customers_count; i++)
