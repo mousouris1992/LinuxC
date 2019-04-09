@@ -115,12 +115,13 @@ void * handleCustomer(void * customer)
 		printf("\nCustomer#%i : Finally is his time to get handled..", tid);
 
 	}
-	//clock_gettime(CLOCK_REALTIME , &t_wait_end);
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
 	// mutex_unlock() - share of shared variable no more needed
 	mutex_unlock(&av_handler_mutex);
+	clock_gettime(CLOCK_REALTIME , &t_wait_end);
+
 
 
 	// services being handled...
@@ -147,7 +148,7 @@ void * handleCustomer(void * customer)
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	//double wait_time = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
+	double wait_time  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
 
