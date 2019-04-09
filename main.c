@@ -124,7 +124,7 @@ typedef struct Customer
 
 }Customer;
 
-int customer_count = 0;
+int customers_count = 0;
 Customer * customers = 0;
 
 int random_seed = 0;
@@ -162,11 +162,11 @@ int main(int argc , char * argv[])
         exit(-1);
     }
 
-	customer_count = atoi(argv[1]);
+	customers_count = atoi(argv[1]);
 	random_seed    = atoi(argv[2]);
 
 	// Init customers
-	customers = malloc(customer_count * sizeof(Customer));
+	customers = malloc(customers_count * sizeof(Customer));
 	if(!customers)
 	{
 		printf("\n-Error : customers::Failed to malloc()");
@@ -179,7 +179,7 @@ int main(int argc , char * argv[])
 	{
 		customers[i].Id = i;
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
-		checkStatus(thread_create , "customers[]" , rc , 1);
+		checkOperationStatus(thread_create , "customers[]" , rc , 1);
 	}
 
 	/* -------------------------------------------------- */
