@@ -10,8 +10,14 @@ int main(int argc , char * argv[])
 
     printf("\n\n ----------- Main -----------\n");
 
+    srand(time(NULL)); // randomize seed
 
-    
+    int random = rand()%100;
+
+    printf("random : %i",i);
+
+
+
     printf("\n");
     return 0;
 }
