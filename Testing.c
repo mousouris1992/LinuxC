@@ -32,5 +32,6 @@ int main()
 	printf("\n random[%i , %i] : %i" ,n_seatMin , n_seatMax , getRandom(n_seatMin , n_seatMax));
 	printf("\n random[%i , %i] : %i" ,t_seatMin , t_seatMax , getRandom(t_seatMin , t_seatMax));
 
+	printf("\n");
 	return 0;
 }
