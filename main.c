@@ -147,8 +147,9 @@ void * handleCustomer(void * customer)
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	double wait_time = (t_wait_end.tv_sec - t_start.tv_sec)/1.000000000d;
-	double total_time = (t_global_end.tv_sec - t_start.tv_sec)/1.000000000d;
+	double wait_time = (t_wait_end.tv_nsec - t_start.tv_nsec) + (t_wait_end.tv_nsec - t_start.tv_nsec) * 1000000000d;
+	double total_time = (t_global_end.tv_nsec - t_start.tv_nsec) + (t_global_end.tv_nsec - t_start.tv_nsec)* 1000000000d;
+
 
 	printf("\nwait time : %d ", wait_time);
 	//mutex_lock(mutex0);
