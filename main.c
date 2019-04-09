@@ -150,11 +150,12 @@ void * handleCustomer(void * customer)
 	pthread_mutex_lock(&mutex0);
 
 	printf("\nHello from Thread#%i , about to access shared_var = %i  ..." , tid , shared_var );
-	sleep(1);
+
 	shared_var++;
 	printf("\nHello from Thread#%i , shared_var = %i" , shared_var);
 
 	pthread_mutex_unlock(&mutex0);
+	sleep(2);
 
 	return 0;
 }
