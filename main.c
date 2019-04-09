@@ -133,13 +133,13 @@ void * handleCustomer(void * customer)
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
     printf("\n-Report : A CustomerHandler is free , all customers in queue are being signaled!");
-	//cond_broadcast(&av_handler_cond);
-	pthread_cond_signal(&av_handler_cond);
+	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
+
 
 	mutex_unlock(&av_handler_mutex);
 
 
-	return 0;
+	pthread_exit(cust->Id);
 }
 
 
