@@ -77,7 +77,7 @@ void checkOperationStatus(enum Operation op ,  int rc , int return_type)
 
     if(rc != 0)
     {
-		printf("\n-Error : Failed to %s | Return code : %i"  op_name , rc);
+		printf("\n-Error : Failed to %s | Return code : %i", op_name , rc);
         if(return_type == 1)
         {
             exit(-1);
@@ -181,30 +181,29 @@ void * handleCustomer(void * customer)
 	printf("\nCustomer#%i : enters the queue!" , tid);
 	printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
 
-	pthread_mutex_lock(&av_handler_mutex);
+	mutex_Lock(&av_handler_mutex);
 	while(av_customer_handlers == 0)
 	{
 		printf("\nCustomer#%i : waits until there is an availabe handler..", tid);
 
-		rc = pthread_cond_wait(&av_handler_cond , &av_handler_mutex);
+		cond_Wait(&av_handler_cond , &av_handler_mutex);
 		//checkOperationStatus(thread_cond_wait , "customer#i", rc , 0);
 	}
 
 	av_customer_handlers--;
 	printf("\nCustomer#%i : is being handled..." , tid);
 	printf("\nCustomer#%i : av_customer_handlers after = %i" , tid, av_customer_handlers);
-	pthread_mutex_unlock(&av_handler_mutex);
+	mutex_Unlock(&av_handler_mutex);
 
 	sleep(2);
 
-
-	pthread_mutex_lock(&av_handler_mutex);
+	mutex_Lock(&av_handler_mutex);
 	printf("\nCustomer#%i : Finished , freeing customerHandler..");
 	av_customer_handlers++;
 	// broadcasting signal for all the customers in 'queue' so they can get handled!
-	pthread_cond_broadcast(&av_handler_cond);
+	cond_Broadcast(&av_handler_cond);
 
-	pthread_mutex_unlock(&av_handler_mutex);
+	mutex_Unlock(&av_handler_mutex);
 
 
 	return 0;
