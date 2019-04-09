@@ -153,7 +153,7 @@ void * handleCustomer(void * customer)
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
 
-	printf("\nwait time : %d ", wait_time);
+	printf("\nwait time : %d ", total_time);
 	//mutex_lock(mutex0);
 	//printf("\n\n-Thread#%i [Report] : Wait time  = %d", tid ,wait_time);
 	//printf("\n           [Report] : Total time = %d", total_time);
