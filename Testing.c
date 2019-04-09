@@ -47,6 +47,8 @@ int main()
 
 	double total_time = (t_end.tv_sec - t_start.tv_sec) + (t_end.tv_nsec - t_start.tv_nsec) / BIL;
 
+	total_time = t_end.tv_sec - t_start.tv_sec;
+
 	printf("time : %d",total_time);
 
 	printf("\n");
