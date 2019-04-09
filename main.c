@@ -147,7 +147,9 @@ void * handleCustomer(void * customer)
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	
+
+	double wait_time = (t_wait_end.tv_sec - t_start.tv_sec)/1.000.000.000;
+
 	pthread_exit(cust->Id);
 }
 
