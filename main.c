@@ -154,6 +154,7 @@ void * handleCustomer(void * customer)
 	int sec = getRandom(t_seatMin , t_seatMax);
 
 	printf("\nCustomer#%i : enters the queue!" , tid);
+	printf("\nCustomer#%i : av_customer_handlers = %i" , av_customer_handlers);
 
 	pthread_mutex_lock(&av_handler_mutex);
 	while(av_customer_handlers == 0)
@@ -166,7 +167,7 @@ void * handleCustomer(void * customer)
 
 	av_customer_handlers--;
 	printf("\nCustomer#%i : is being handled...");
-	printf("\nCustomer#%i : av_customer_handlers = %i" , av_customer_handlers);
+	printf("\nCustomer#%i : av_customer_handlers after = %i" , av_customer_handlers);
 	pthread_mutex_unlock(&av_handler_mutex);
 
 	return 0;
