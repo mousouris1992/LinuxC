@@ -5,6 +5,8 @@
 
 //
 
+typedef pthread_mutex_lock mutex_lock
+
 enum Operation
 {
 
@@ -169,6 +171,18 @@ void * handleCustomer(void * customer)
 	printf("\nCustomer#%i : is being handled..." , tid);
 	printf("\nCustomer#%i : av_customer_handlers after = %i" , tid, av_customer_handlers);
 	pthread_mutex_unlock(&av_handler_mutex);
+
+	sleep(2);
+
+
+	pthread_mutex_lock(&av_handler_mutex);
+	printf("\nCustomer#%i : Finished , freeing customerHandler..");
+	av_customer_handlers++;
+	// broadcasting signal for all the customers in 'queue' so they can get handled!
+	pthread_cond_broadcast(&av_handler_cond);
+
+	pthread_mutex_unlock(&av_handler_mutex);
+
 
 	return 0;
 }
