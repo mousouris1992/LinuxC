@@ -171,6 +171,7 @@ void * handleCustomer(void * customer)
 
 void Init(char * argv[])
 {
+	srand(time(NULL)); // randomize seed
 
 	customers_count = atoi(argv[1]);
 	random_seed     = atoi(argv[2]);
@@ -201,7 +202,6 @@ int main(int argc , char * argv[])
 
 
      printf("\n\n ----------- Main -----------\n");
-     srand(time(NULL)); // randomize seed
 
 
     /* ------------------- Initialize ------------------- */
