@@ -6,7 +6,7 @@
 //
 enum Operation
 {
-	malloc,
+	_malloc,
 	something
 };
 
@@ -37,7 +37,7 @@ void checkStatus(void * data , enum Operation op , const char * obj , int return
 
 	if(!data)
 	{
-		printf("\n-Error : %s::Failed to %s");
+		printf("\n-Error : %s::Failed to %s" , obj , op_name);
 		if(return_type == 0)
 		{
 			printf("\n--Terminating thread..");
@@ -128,7 +128,7 @@ int main(int argc , char * argv[])
 	random_seed    = atoi(argv[2]);
 
 	customers = malloc(customer_count * sizeof(Customer));
-	checkStatus(customers , malloc , "customerThreads" , 1);
+	checkStatus(customers , _malloc , "customerThreads" , 1);
 
 
 
