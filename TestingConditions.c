@@ -152,7 +152,8 @@ void * increaseCount(void *t)
 		count++;
 
 		printf("increaseCount(): thread#%d -> count = %d, unlocking mutex\n",*threadId, count);
-    	rc = pthread_mutex_unlock(&countMutex);
+
+        rc = pthread_mutex_unlock(&countMutex);
 		checkOperationStatus(mutex_unlock , rc , 0);
     }
 
@@ -184,7 +185,8 @@ void * doubleCountVariable(void *t)
 	while (count < COUNT_LIMIT)
     {
 		printf("doubleCountVariable(): thread#%d -> going into wait...\n", *threadId);
-    	rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
+
+        rc = pthread_cond_wait(&countThresholdCondition, &countMutex);
 		checkOperationStatus(thread_cond_wait , rc , 0);
 
 		printf("doubleCountVariable(): thread#%d -> Condition signal received.\n", *threadId);
