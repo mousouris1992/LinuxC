@@ -172,35 +172,53 @@ pthread_cond_t av_handler_cond;
 
 void * handleCustomer(void * customer)
 {
-	int rc;
 
 	Customer* cust = (Customer *)customer;
 	int tid = cust->Id;
 	int sec = getRandom(t_seatMin , t_seatMax);
 
+	// customer enters the queue of service...
 	printf("\nCustomer#%i : enters the queue!" , tid);
 	printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
 
+
+
+	/*
+	  * mutex_lock()
+	  * check for available customer handlers
+	  * if (av_customer_handlers > 0 ) -> customer is being handled
+	  * else -> customer waits in the queue until a customer handler is free
+	*/
 	mutex_lock(&av_handler_mutex);
 	while(av_customer_handlers == 0)
 	{
-		printf("\nCustomer#%i : waits until there is an availabe handler..", tid);
-
+		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
+		printf("\nCustomer#%i : waits in queue until there is an availabe handler..", tid);
 		cond_wait(&av_handler_cond , &av_handler_mutex);
-		//checkOperationStatus(thread_cond_wait , "customer#i", rc , 0);
 	}
 
+	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
 	printf("\nCustomer#%i : is being handled..." , tid);
 	printf("\nCustomer#%i : av_customer_handlers after = %i" , tid, av_customer_handlers);
+
+	// mutex_unlock() - share of shared variable no more needed
 	mutex_unlock(&av_handler_mutex);
 
+
+	// services being handled...
+	// ...
+	// ..
+	// .
 	sleep(2);
 
+	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
+
 	printf("\nCustomer#%i : Finished , freeing customerHandler..");
 	av_customer_handlers++;
-	// broadcasting signal for all the customers in 'queue' so they can get handled!
+
+	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
 	cond_broadcast(&av_handler_cond);
 
 	mutex_unlock(&av_handler_mutex);
