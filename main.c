@@ -154,11 +154,12 @@ void * handleCustomer(void * customer)
 	int sec = getRandom(t_seatMin , t_seatMax);
 
 	printf("\nCustomer#%i : enters the queue!" , tid);
-	printf("\nCustomer#%i : waits until there is an availabe handler..");
 
 	pthread_mutex_lock(&av_handler_mutex);
 	while(av_customer_handlers == 0)
 	{
+		printf("\nCustomer#%i : waits until there is an availabe handler..");
+
 		rc = pthread_cond_wait(&av_handler_cond , &av_handler_mutex);
 		checkOperationStatus(thread_cond_wait , "customer#i", rc , 0);
 	}
