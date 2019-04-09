@@ -17,7 +17,6 @@ int main(int argc , char * argv[])
     printf("random : %i",random);
 
 
-
     printf("\n");
     return 0;
 }
