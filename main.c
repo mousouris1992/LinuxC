@@ -9,17 +9,17 @@
 enum Operation
 {
 
-    mutex_lock,
-    mutex_unlock,
-    thread_cond_wait,
-    thread_cond_broadcast,
-    thread_cond_signal,
-    mutex_init,
-    thread_cond_init,
-    thread_create,
-    thread_join,
-    mutex_destroy,
-    thread_cond_destroy
+    _mutex_lock,
+    _mutex_unlock,
+    _thread_cond_wait,
+    _thread_cond_broadcast,
+    _thread_cond_signal,
+    _mutex_init,
+    _thread_cond_init,
+    _thread_create,
+    _thread_join,
+    _mutex_destroy,
+    _thread_cond_destroy
 
 };
 
@@ -40,37 +40,37 @@ void checkOperationStatus(enum Operation op ,  int rc , int return_type)
     char * op_name;
     switch(op)
     {
-        case mutex_lock : op_name = "mutex_lock()";
+        case _mutex_lock : op_name = "mutex_lock()";
         break;
 
-        case mutex_unlock : op_name = "mutex_unlock()";
+        case _mutex_unlock : op_name = "mutex_unlock()";
         break;
 
-        case thread_cond_wait : op_name = "thread_cond_wait()";
+        case _thread_cond_wait : op_name = "thread_cond_wait()";
         break;
 
-        case thread_cond_broadcast :  op_name = "thread_cond_broadcast()";
+        case _thread_cond_broadcast :  op_name = "thread_cond_broadcast()";
         break;
 
-        case thread_cond_signal : op_name = "thread_cond_signal()";
+        case _thread_cond_signal : op_name = "thread_cond_signal()";
         break;
 
-        case thread_create : op_name = "thread_create()";
+        case _thread_create : op_name = "thread_create()";
         break;
 
-        case thread_join :  op_name = "thread_join()";
+        case _thread_join :  op_name = "thread_join()";
         break;
 
-        case mutex_init : op_name = "mutex_init()";
+        case _mutex_init : op_name = "mutex_init()";
         break;
 
-        case mutex_destroy : op_name = "mutex_destroy()";
+        case _mutex_destroy : op_name = "mutex_destroy()";
         break;
 
-        case thread_cond_init : op_name = "thread_cond_init()";
+        case _thread_cond_init : op_name = "thread_cond_init()";
         break;
 
-        case thread_cond_destroy : op_name = "thread_cond_destroy()";
+        case _thread_cond_destroy : op_name = "thread_cond_destroy()";
         break;
 
     }
@@ -94,25 +94,25 @@ void checkOperationStatus(enum Operation op ,  int rc , int return_type)
 void mutex_lock(pthread_mutex_t *mutex)
 {
 	int rc = pthread_mutex_lock(mutex);
-	checkOperationStatus(mutex_lock , rc , 0);
+	checkOperationStatus(_mutex_lock , rc , 0);
 }
 
 void mutex_unlock(pthread_mutex_t *mutex)
 {
 	int rc = pthread_mutex_unlock(mutex);
-	checkOperationStatus(mutex_unlock , rc , 0);
+	checkOperationStatus(_mutex_unlock , rc , 0);
 }
 
 void cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex)
 {
 	int rc = pthread_cond_wait(cond , mutex);
-	checkOperationStatus(thread_cond_wait , rc , 0);
+	checkOperationStatus(_thread_cond_wait , rc , 0);
 }
 
 void cond_broadcast(pthread_cond_t *cond)
 {
 	int rc = pthread_cond_broadcast(cond);
-	checkOperationStatus(thread_cond_broadcast , rc , 0);
+	checkOperationStatus(_thread_cond_broadcast , rc , 0);
 }
 
 
@@ -237,13 +237,13 @@ void Init(char * argv[])
 
 	// Init Mutexes && cond_variables
 	rc = pthread_mutex_init(&mutex0 , NULL);
-	checkOperationStatus(mutex_init , rc , 1);
+	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&av_handler_mutex , NULL);
-	checkOperationStatus(mutex_init  , rc , 1);
+	checkOperationStatus(_mutex_init  , rc , 1);
 
 	rc = pthread_cond_init(&av_handler_cond , NULL);
-	checkOperationStatus(thread_cond_init , rc , 1);
+	checkOperationStatus(_thread_cond_init , rc , 1);
 
 }
 
@@ -275,7 +275,7 @@ int main(int argc , char * argv[])
 	{
 		customers[i].Id = i;
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
-		checkOperationStatus(thread_create , rc , 1);
+		checkOperationStatus(_thread_create , rc , 1);
 	}
 
 	/* -------------------------------------------------- */
@@ -286,7 +286,7 @@ int main(int argc , char * argv[])
 	for(int i = 0; i<customers_count; i++)
 	{
 		rc = pthread_join(customers[i].thread , &status);
-		checkOperationStatus(thread_join  , rc , 1);
+		checkOperationStatus(_thread_join  , rc , 1);
 	}
 	/* -------------------------------------------------- */
 
