@@ -116,6 +116,40 @@ void cond_broadcast(pthread_cond_t *cond)
 }
 
 
+void Init(char * argv[])
+{
+	av_customer_handlers = n_tel;
+
+	int rc;
+	srand(time(NULL)); // randomize seed
+
+	customers_count = atoi(argv[1]);
+	random_seed     = atoi(argv[2]);
+
+	// Init customers
+	customers = malloc(customers_count * sizeof(Customer));
+	if(!customers)
+	{
+		printf("\n-Error : customers::Failed to malloc()");
+		printf("\n--Exiting program..");
+		exit(-1);
+	}
+
+	// Init Mutexes && cond_variables
+	rc = pthread_mutex_init(&mutex0 , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
+	rc = pthread_mutex_init(&av_handler_mutex , NULL);
+	checkOperationStatus(_mutex_init  , rc , 1);
+
+	rc = pthread_mutex_init(&service_mutex , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
+	rc = pthread_cond_init(&av_handler_cond , NULL);
+	checkOperationStatus(_thread_cond_init , rc , 1);
+
+}
+
 //-------------------------------------
 //
 //          Variables
@@ -157,6 +191,7 @@ int random_seed = 0;
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
 pthread_mutex_t av_handler_mutex;
+pthread_mutex_t service_mutex;
 
 pthread_cond_t av_handler_cond;
 
@@ -169,7 +204,6 @@ pthread_cond_t av_handler_cond;
 //
 //-------------------------------------
 
-
 void * handleCustomer(void * customer)
 {
 
@@ -178,9 +212,8 @@ void * handleCustomer(void * customer)
 	int sec = getRandom(t_seatMin , t_seatMax);
 
 	// customer enters the queue of service...
-	printf("\nCustomer#%i : enters the queue!" , tid);
+	printf("\n\nCustomer#%i : enters the queue!" , tid);
 	printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
-
 
 
 	/*
@@ -199,7 +232,7 @@ void * handleCustomer(void * customer)
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
-	printf("\nCustomer#%i : is being handled..." , tid);
+	printf("\n\nCustomer#%i : is being handled..." , tid);
 	printf("\nCustomer#%i : av_customer_handlers after = %i" , tid, av_customer_handlers);
 
 	// mutex_unlock() - share of shared variable no more needed
@@ -207,15 +240,18 @@ void * handleCustomer(void * customer)
 
 
 	// services being handled...
+	mutex_lock(&service_mutex);
 	// ...
 	// ..
-	// .
 	sleep(2);
+	// ..
+	// ...
+	mutex_unlock(&service_mutex);
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	printf("\nCustomer#%i : Finished , freeing customerHandler..");
+	printf("\n\nCustomer#%i : Finished , freeing customerHandler..");
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
@@ -227,43 +263,6 @@ void * handleCustomer(void * customer)
 	return 0;
 }
 
-
-//-------------------------------------
-//
-//           Init Function
-//
-//-------------------------------------
-
-void Init(char * argv[])
-{
-	av_customer_handlers = n_tel;
-
-	int rc;
-	srand(time(NULL)); // randomize seed
-
-	customers_count = atoi(argv[1]);
-	random_seed     = atoi(argv[2]);
-
-	// Init customers
-	customers = malloc(customers_count * sizeof(Customer));
-	if(!customers)
-	{
-		printf("\n-Error : customers::Failed to malloc()");
-		printf("\n--Exiting program..");
-		exit(-1);
-	}
-
-	// Init Mutexes && cond_variables
-	rc = pthread_mutex_init(&mutex0 , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
-
-	rc = pthread_mutex_init(&av_handler_mutex , NULL);
-	checkOperationStatus(_mutex_init  , rc , 1);
-
-	rc = pthread_cond_init(&av_handler_cond , NULL);
-	checkOperationStatus(_thread_cond_init , rc , 1);
-
-}
 
 //-------------------------------------
 //
