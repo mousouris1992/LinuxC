@@ -23,132 +23,6 @@ enum Operation
 
 };
 
-//-------------------------------------
-//
-//        Helper Functions
-//
-//-------------------------------------
-
-int getRandom(int min , int max)
-{
-    return (rand()%(max - min) + min);
-}
-
-
-void checkOperationStatus(enum Operation op ,  int rc , int return_type)
-{
-    char * op_name;
-    switch(op)
-    {
-        case _mutex_lock : op_name = "mutex_lock()";
-        break;
-
-        case _mutex_unlock : op_name = "mutex_unlock()";
-        break;
-
-        case _thread_cond_wait : op_name = "thread_cond_wait()";
-        break;
-
-        case _thread_cond_broadcast :  op_name = "thread_cond_broadcast()";
-        break;
-
-        case _thread_cond_signal : op_name = "thread_cond_signal()";
-        break;
-
-        case _thread_create : op_name = "thread_create()";
-        break;
-
-        case _thread_join :  op_name = "thread_join()";
-        break;
-
-        case _mutex_init : op_name = "mutex_init()";
-        break;
-
-        case _mutex_destroy : op_name = "mutex_destroy()";
-        break;
-
-        case _thread_cond_init : op_name = "thread_cond_init()";
-        break;
-
-        case _thread_cond_destroy : op_name = "thread_cond_destroy()";
-        break;
-
-    }
-
-    if(rc != 0)
-    {
-		printf("\n-Error : Failed to %s | Return code : %i", op_name , rc);
-        if(return_type == 1)
-        {
-            exit(-1);
-        }
-        else
-        {
-            pthread_exit(&rc);
-        }
-    }
-
-}
-
-
-void mutex_lock(pthread_mutex_t *mutex)
-{
-	int rc = pthread_mutex_lock(mutex);
-	checkOperationStatus(_mutex_lock , rc , 0);
-}
-
-void mutex_unlock(pthread_mutex_t *mutex)
-{
-	int rc = pthread_mutex_unlock(mutex);
-	checkOperationStatus(_mutex_unlock , rc , 0);
-}
-
-void cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex)
-{
-	int rc = pthread_cond_wait(cond , mutex);
-	checkOperationStatus(_thread_cond_wait , rc , 0);
-}
-
-void cond_broadcast(pthread_cond_t *cond)
-{
-	int rc = pthread_cond_broadcast(cond);
-	checkOperationStatus(_thread_cond_broadcast , rc , 0);
-}
-
-
-void Init(char * argv[])
-{
-	av_customer_handlers = n_tel;
-
-	int rc;
-	srand(time(NULL)); // randomize seed
-
-	customers_count = atoi(argv[1]);
-	random_seed     = atoi(argv[2]);
-
-	// Init customers
-	customers = malloc(customers_count * sizeof(Customer));
-	if(!customers)
-	{
-		printf("\n-Error : customers::Failed to malloc()");
-		printf("\n--Exiting program..");
-		exit(-1);
-	}
-
-	// Init Mutexes && cond_variables
-	rc = pthread_mutex_init(&mutex0 , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
-
-	rc = pthread_mutex_init(&av_handler_mutex , NULL);
-	checkOperationStatus(_mutex_init  , rc , 1);
-
-	rc = pthread_mutex_init(&service_mutex , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
-
-	rc = pthread_cond_init(&av_handler_cond , NULL);
-	checkOperationStatus(_thread_cond_init , rc , 1);
-
-}
 
 //-------------------------------------
 //
@@ -313,4 +187,133 @@ int main(int argc , char * argv[])
 
     printf("\n");
     return 0;
+}
+
+
+
+//-------------------------------------
+//
+//        Helper Functions
+//
+//-------------------------------------
+
+int getRandom(int min , int max)
+{
+    return (rand()%(max - min) + min);
+}
+
+
+void checkOperationStatus(enum Operation op ,  int rc , int return_type)
+{
+    char * op_name;
+    switch(op)
+    {
+        case _mutex_lock : op_name = "mutex_lock()";
+        break;
+
+        case _mutex_unlock : op_name = "mutex_unlock()";
+        break;
+
+        case _thread_cond_wait : op_name = "thread_cond_wait()";
+        break;
+
+        case _thread_cond_broadcast :  op_name = "thread_cond_broadcast()";
+        break;
+
+        case _thread_cond_signal : op_name = "thread_cond_signal()";
+        break;
+
+        case _thread_create : op_name = "thread_create()";
+        break;
+
+        case _thread_join :  op_name = "thread_join()";
+        break;
+
+        case _mutex_init : op_name = "mutex_init()";
+        break;
+
+        case _mutex_destroy : op_name = "mutex_destroy()";
+        break;
+
+        case _thread_cond_init : op_name = "thread_cond_init()";
+        break;
+
+        case _thread_cond_destroy : op_name = "thread_cond_destroy()";
+        break;
+
+    }
+
+    if(rc != 0)
+    {
+		printf("\n-Error : Failed to %s | Return code : %i", op_name , rc);
+        if(return_type == 1)
+        {
+            exit(-1);
+        }
+        else
+        {
+            pthread_exit(&rc);
+        }
+    }
+
+}
+
+
+void mutex_lock(pthread_mutex_t *mutex)
+{
+	int rc = pthread_mutex_lock(mutex);
+	checkOperationStatus(_mutex_lock , rc , 0);
+}
+
+void mutex_unlock(pthread_mutex_t *mutex)
+{
+	int rc = pthread_mutex_unlock(mutex);
+	checkOperationStatus(_mutex_unlock , rc , 0);
+}
+
+void cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex)
+{
+	int rc = pthread_cond_wait(cond , mutex);
+	checkOperationStatus(_thread_cond_wait , rc , 0);
+}
+
+void cond_broadcast(pthread_cond_t *cond)
+{
+	int rc = pthread_cond_broadcast(cond);
+	checkOperationStatus(_thread_cond_broadcast , rc , 0);
+}
+
+
+void Init(char * argv[])
+{
+	av_customer_handlers = n_tel;
+
+	int rc;
+	srand(time(NULL)); // randomize seed
+
+	customers_count = atoi(argv[1]);
+	random_seed     = atoi(argv[2]);
+
+	// Init customers
+	customers = malloc(customers_count * sizeof(Customer));
+	if(!customers)
+	{
+		printf("\n-Error : customers::Failed to malloc()");
+		printf("\n--Exiting program..");
+		exit(-1);
+	}
+
+	// Init Mutexes && cond_variables
+	rc = pthread_mutex_init(&mutex0 , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
+	rc = pthread_mutex_init(&av_handler_mutex , NULL);
+	checkOperationStatus(_mutex_init  , rc , 1);
+
+	rc = pthread_mutex_init(&service_mutex , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
+	rc = pthread_cond_init(&av_handler_cond , NULL);
+	checkOperationStatus(_thread_cond_init , rc , 1);
+
 }
