@@ -112,8 +112,7 @@ int Transactions_counter = 0;
 int seatsPlan[n_seat];
 
 // customer handlers
-int customer_handler = 8;
-int availabe_customer_handlers = 8;
+int av_customer_handlers = n_tel;
 
 
 // customers variables
@@ -131,6 +130,9 @@ int random_seed = 0;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
+pthread_mutex_t av_handler_mutex;
+
+pthread_cond_t av_handler_cond;
 
 // testing variables
 static int shared_var = 0;
@@ -141,24 +143,34 @@ static int shared_var = 0;
 //
 //-------------------------------------
 
+int getAvailableHandlers()
+{
+	//pthread_mutex_lock(&av_handler_mutex);
+
+}
+
 void * handleCustomer(void * customer)
 {
-
+	int rc;
 
 	Customer* cust = (Customer *)customer;
 	int tid = cust->Id;
 	int sec = getRandom(t_seatMin , t_seatMax);
 
-	printf("\nThread#%i : says Hello !" , tid);
+	printf("\nCustomer#%i : enters the queue!" , tid);
+	printf("\nCustomer#%i : waits until there is an availabe handler..");
 
-	pthread_mutex_lock(&mutex0);
-	printf("\nThread#%i : about to access shared_var = %i  ..." , tid , shared_var );
-	sleep(2);
-	shared_var++;
-	printf("\nThread#%i : finished! shared_var = %i" , tid , shared_var);
+	pthread_mutex_lock(&av_handler_mutex);
+	while(av_customer_handlers == 0)
+	{
+		rc = pthread_cond_wait(&av_handler_cond);
+		checkOperationStatus(thread_cond_wait , "customer#i", rc , 0);
+	}
 
-	pthread_mutex_unlock(&mutex0);
-
+	av_customer_handlers--;
+	printf("\nCustomer#%i : is being handled...");
+	printf("\nCustomer#%i : av_customer_handlers = %i" , av_customer_handlers);
+	pthread_mutex_unlock(&av_handler_mutex);
 
 	return 0;
 }
@@ -171,6 +183,7 @@ void * handleCustomer(void * customer)
 
 void Init(char * argv[])
 {
+	int rc;
 	srand(time(NULL)); // randomize seed
 
 	customers_count = atoi(argv[1]);
@@ -186,8 +199,14 @@ void Init(char * argv[])
 	}
 
 	// Init Mutexes && cond_variables
-	int rc = pthread_mutex_init(&mutex0 , NULL);
+	rc = pthread_mutex_init(&mutex0 , NULL);
 	checkOperationStatus(mutex_init , "mutex0" , rc , 1);
+
+	rc = pthread_mutex_init(&av_handler_mutex , NULL);
+	checkOperationStatus(mutex_init , "av_handler_mutex" , rc , 1);
+
+	rc = pthread_cond_init(&av_handler_cond , NULL);
+	checkOperationStatus(thread_cond_init , "av_handler_cond" , rc , 1);
 
 }
 
