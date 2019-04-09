@@ -126,9 +126,10 @@ typedef struct Customer
 
 int customers_count = 0;
 Customer * customers = 0;
-
 int random_seed = 0;
 
+// Mutexes && cond_variables
+pthread_mutex_t mutex0;
 
 //-------------------------------------
 //
@@ -144,12 +145,36 @@ void * handleCustomer(void * customer)
 
 //-------------------------------------
 //
+//           Init Function
+//
+//-------------------------------------
+
+void Init(char * arg0 , char * arg1)
+{
+	customers_count = atoi(arg0);
+	random_seed     = atoi(arg1);
+
+	// Init customers
+	customers = malloc(customers_count * sizeof(Customer));
+	if(!customers)
+	{
+		printf("\n-Error : customers::Failed to malloc()");
+		printf("\n--Exiting program..");
+		exit(-1);
+	}
+
+}
+
+//-------------------------------------
+//
 //           Main
 //
 //-------------------------------------
 
 int main(int argc , char * argv[])
 {
+
+
      printf("\n\n ----------- Main -----------\n");
      srand(time(NULL)); // randomize seed
 
@@ -162,17 +187,7 @@ int main(int argc , char * argv[])
         exit(-1);
     }
 
-	customers_count = atoi(argv[1]);
-	random_seed    = atoi(argv[2]);
-
-	// Init customers
-	customers = malloc(customers_count * sizeof(Customer));
-	if(!customers)
-	{
-		printf("\n-Error : customers::Failed to malloc()");
-		printf("\n--Exiting program..");
-		exit(-1);
-	}
+	Init(argv[1] , argv[2]);
 
 	int rc;
 	for(int i = 0; i<customers_count; i++)
