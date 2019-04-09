@@ -112,7 +112,7 @@ int Transactions_counter = 0;
 int seatsPlan[n_seat];
 
 // customer handlers
-int av_customer_handlers = n_tel;
+int av_customer_handlers = 8;
 
 
 // customers variables
