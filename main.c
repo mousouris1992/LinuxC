@@ -149,14 +149,16 @@ void * handleCustomer(void * customer)
 	int tid = cust->Id;
 	int sec = getRandom(t_seatMin , t_seatMax);
 
-	pthread_mutex_lock(&mutex0);
-	printf("\nHello from Thread#%i , about to access shared_var = %i  ..." , tid , shared_var );
+	printf("\nThread#%i : says Hello !" , %tid);
 
+	pthread_mutex_lock(&mutex0);
+	printf("\nThread#%i : about to access shared_var = %i  ..." , tid , shared_var );
+	sleep(2);
 	shared_var++;
-	printf("\nHello from Thread#%i , shared_var = %i" , tid , shared_var);
+	printf("\nThread#%i : finished! shared_var = %i" , tid , shared_var);
 
 	pthread_mutex_unlock(&mutex0);
-	sleep(2);
+
 
 	return 0;
 }
