@@ -144,10 +144,10 @@ void * handleCustomer(void * customer)
 	int tid = cust->Id;
 	int sec = getRandom(t_seatMin , t_seatMax);
 
-	pthread_mutex_lock(&mutex0);
+	//pthread_mutex_lock(&mutex0);
 	printf("\nHello from Thread#%i , going to wait for %i seconds..." , tid , sec);
 	sleep(sec);
-	pthread_mutex_unlock(&mutex0);
+	//pthread_mutex_unlock(&mutex0);
 
 	return 0;
 }
