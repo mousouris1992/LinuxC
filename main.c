@@ -115,7 +115,7 @@ void * handleCustomer(void * customer)
 		printf("\nCustomer#%i : Finally is his time to get handled..", tid);
 
 	}
-	clock_gettime(CLOCK_REALTIME , &t_wait_end);
+	//clock_gettime(CLOCK_REALTIME , &t_wait_end);
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
@@ -143,19 +143,17 @@ void * handleCustomer(void * customer)
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
     printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
 	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
-
-
 	mutex_unlock(&av_handler_mutex);
 
 	//
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	double wait_time = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
+	//double wait_time = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
 
 	//printf("\nwait time : %d ", total_time);
 	//mutex_lock(mutex0);
-	printf("\n\n-Thread#%i [Report] : Wait time  = %f", tid ,wait_time);
+	printf("\n\n-Thread#%i [Report] : Total time  = %f", tid ,total_time);
 	//printf("\n           [Report] : Total time = %f", total_time);
 	//mutex_unlock(mutex0);
 
