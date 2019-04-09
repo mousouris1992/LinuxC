@@ -91,27 +91,27 @@ void checkOperationStatus(enum Operation op ,  int rc , int return_type)
 }
 
 
-void mutex_lock(pthread_mutex_t mutex)
+void mutex_Lock(pthread_mutex_t &mutex)
 {
-	int rc = pthread_mutex_lock(&mutex);
+	int rc = pthread_mutex_lock(mutex);
 	checkOperationStatus(mutex_lock , rc , 0);
 }
 
-void mutex_unlock(pthread_mutex_t mutex)
+void mutex_Unlock(pthread_mutex_t &mutex)
 {
-	int rc = pthread_mutex_unlock(&mutex);
+	int rc = pthread_mutex_unlock(mutex);
 	checkOperationStatus(mutex_unlock , rc , 0);
 }
 
-void cond_wait(pthread_cond_t cond , pthread_cond_t mutex)
+void cond_Wait(pthread_cond_t &cond , pthread_cond_t &mutex)
 {
-	int rc = pthread_cond_wait(&cond , &mutex);
+	int rc = pthread_cond_wait(cond , mutex);
 	checkOperationStatus(thread_cond_wait , rc , 0);
 }
 
-void cond_broadcast(pthread_cond_t cond)
+void cond_Broadcast(pthread_cond_t &cond)
 {
-	int rc = pthread_cond_broadcast(&cond);
+	int rc = pthread_cond_broadcast(cond);
 	checkOperationStatus(thread_cond_broadcast , rc , 0);
 }
 
@@ -170,7 +170,6 @@ pthread_cond_t av_handler_cond;
 //-------------------------------------
 
 
-
 void * handleCustomer(void * customer)
 {
 	int rc;
@@ -210,6 +209,7 @@ void * handleCustomer(void * customer)
 
 	return 0;
 }
+
 
 //-------------------------------------
 //
