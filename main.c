@@ -159,7 +159,7 @@ void * handleCustomer(void * customer)
 	pthread_mutex_lock(&av_handler_mutex);
 	while(av_customer_handlers == 0)
 	{
-		rc = pthread_cond_wait(&av_handler_cond);
+		rc = pthread_cond_wait(&av_handler_cond , &av_handler_mutex);
 		checkOperationStatus(thread_cond_wait , "customer#i", rc , 0);
 	}
 
