@@ -132,6 +132,9 @@ int random_seed = 0;
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
 
+// testing variables
+static int shared_var = 0;
+
 //-------------------------------------
 //
 //      Customer Service Functions
@@ -144,10 +147,14 @@ void * handleCustomer(void * customer)
 	int tid = cust->Id;
 	int sec = getRandom(t_seatMin , t_seatMax);
 
-	//pthread_mutex_lock(&mutex0);
-	printf("\nHello from Thread#%i , going to wait for %i seconds..." , tid , sec);
-	sleep(sec);
-	//pthread_mutex_unlock(&mutex0);
+	pthread_mutex_lock(&mutex0);
+
+	printf("\nHello from Thread#%i , about to access shared_var = %i  ..." , tid , shared_var );
+	sleep(1);
+	shared_var++;
+	printf("\nHello from Thread#%i , shared_var = %i" , shared_var);
+
+	pthread_mutex_unlock(&mutex0);
 
 	return 0;
 }
