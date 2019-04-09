@@ -87,7 +87,7 @@ void * handleCustomer(void * customer)
 
 	// customer enters the queue of service...
 	printf("\n\nCustomer#%i : enters the queue!" , tid);
-	printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
+	//printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
 
 
 	/*
@@ -97,6 +97,7 @@ void * handleCustomer(void * customer)
 	  * else -> customer waits in the queue until a customer handler is free
 	*/
 	mutex_lock(&av_handler_mutex);
+	printf("\n-Report : av_customer_handlers = %i" ,av_customer_handlers);
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
@@ -106,9 +107,6 @@ void * handleCustomer(void * customer)
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
-	printf("\n\nCustomer#%i : is being handled..." , tid);
-	printf("\nCustomer#%i : av_customer_handlers after = %i" , tid, av_customer_handlers);
-
 	// mutex_unlock() - share of shared variable no more needed
 	mutex_unlock(&av_handler_mutex);
 
@@ -117,18 +115,21 @@ void * handleCustomer(void * customer)
 	mutex_lock(&service_mutex);
 	// ...
 	// ..
+	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 	sleep(2);
 	// ..
 	// ...
 	mutex_unlock(&service_mutex);
 
+
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	printf("\n\nCustomer#%i : Finished , freeing customerHandler..");
+	printf("\n\nCustomer#%i : Finished!");
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
+    printf("\n-Report : A CustomerHandler is free , all customers in queue are being signaled!");
 	cond_broadcast(&av_handler_cond);
 
 	mutex_unlock(&av_handler_mutex);
