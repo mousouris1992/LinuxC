@@ -109,7 +109,7 @@ void cond_Wait(pthread_cond_t *cond , pthread_cond_t *mutex)
 	checkOperationStatus(thread_cond_wait , rc , 0);
 }
 
-void cond_Broadcast(pthread_cond_t *cond)
+void cond_broadcast(pthread_cond_t *cond)
 {
 	int rc = pthread_cond_broadcast(cond);
 	checkOperationStatus(thread_cond_broadcast , rc , 0);
@@ -201,7 +201,7 @@ void * handleCustomer(void * customer)
 	printf("\nCustomer#%i : Finished , freeing customerHandler..");
 	av_customer_handlers++;
 	// broadcasting signal for all the customers in 'queue' so they can get handled!
-	cond_Broadcast(&av_handler_cond);
+	cond_broadcast(&av_handler_cond);
 
 	mutex_Unlock(&av_handler_mutex);
 
