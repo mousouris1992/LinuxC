@@ -64,7 +64,7 @@ int random_seed = 0;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
-pthread_mutex_t av_handler_mutex;
+pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
 pthread_mutex_t service_mutex;
 
 pthread_cond_t av_handler_cond;
@@ -97,7 +97,8 @@ void * handleCustomer(void * customer)
 	  * else -> customer waits in the queue until a customer handler is free
 	*/
 	mutex_lock(&av_handler_mutex);
-	printf("\n-Report : av_customer_handlers = %i" ,av_customer_handlers);
+
+	printf("\n-Report : av_customer_handlers = %i" , av_customer_handlers);
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
@@ -112,14 +113,14 @@ void * handleCustomer(void * customer)
 
 
 	// services being handled...
+	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 	mutex_lock(&service_mutex);
 	// ...
 	// ..
-	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
-	sleep(2);
 	// ..
 	// ...
 	mutex_unlock(&service_mutex);
+	sleep(2);
 
 
 	// again , we have to mutex_lock() in order to access shared variable
