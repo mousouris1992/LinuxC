@@ -36,8 +36,8 @@ enum Operation
 #define n_tel          8
 #define n_seatMin      1
 #define n_seatMax      5
-#define t_seatMin      1
-#define t_seatMax      10
+#define t_seatMin      1 // 5
+#define t_seatMax      5 // 10
 #define p_cardSuccess  90
 #define c_seat         20
 
@@ -74,6 +74,9 @@ Customer * customers = 0;
 
 double m_wait_time;
 double m_total_time;
+
+struct timespec t_execution_start , t_execution_end;
+double total_execution_time;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
@@ -252,7 +255,7 @@ void * handleCustomer(void * customer)
     // time to fetch the request by the customerHandler
     // if (requested seats get approved) -> bind seats && payment process
     // else -> error message && current customer's handling completes
-    int t_random = getRandom(1 , 5); //sleep(t_random);
+    int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
     cust->seats_index = 0;
 
     //printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
@@ -391,6 +394,8 @@ int main(int argc , char * argv[])
 
 	Init(argv);
 
+
+	// create Customers && their Threads
 	int rc;
 	for(int i = 0; i<customers_count; i++)
 	{
@@ -401,18 +406,10 @@ int main(int argc , char * argv[])
 		customers[i].payment_value = 0;
 		customers[i].msg = "";
 		customers[i].error_msg = "";
-		/*
-		int seats_requested;
-		int * seats_index;
-		int payment_success;
-		int payment_value;
-		char * error_msg;
-		*/
+
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
 		checkOperationStatus(_thread_create , rc , 1);
 	}
-
-	/* -------------------------------------------------- */
 
 
 	/* ----------------- join threads ------------------- */
@@ -422,12 +419,18 @@ int main(int argc , char * argv[])
 		rc = pthread_join(customers[i].thread , &status);
 		checkOperationStatus(_thread_join  , rc , 1);
 	}
-	/* -------------------------------------------------- */
 
+
+
+	/* ------------------ Final Report ------------------------ */
+	clock_gettime(CLOCK_REALTIME , &t_execution_end);
+
+	total_execution_time = (t_execution_end.tv_sec - t_execution_start.tv_sec) + (t_execution_end.tv_nsec - t_execution_start.tv_nsec) / BILLION;
 	m_wait_time  /= (double)customers_count;
 	m_total_time /= (double)customers_count;
 
 	printf("\n\n\n -------- Theatre Report --------");
+
 	// print final seats Plan
 	printf("\n\n      -Total Customers handled : %i" , customers_count);
 	printf("\n      -Total Balance : %i" , balance);
@@ -445,8 +448,9 @@ int main(int argc , char * argv[])
 		}
 	}
 	printf("\n");
-	printf("\n      -average wait_time  : %f" , m_wait_time);
-	printf("\n      -average total_time : %f" , m_total_time);
+	printf("\n      -average wait_time    : %f" , m_wait_time);
+	printf("\n      -average total_time   : %f" , m_total_time);
+	printf("\n      -Total execution time : %f" , total_execution_time);
 
 	// clean up
 	cleanUp();
@@ -556,6 +560,8 @@ void Init(char * argv[])
 
 	int rc;
 	srand(time(NULL)); // randomize seed
+
+	clock_gettime(CLOCK_REALTIME , &t_execution_start);
 
 	customers_count = atoi(argv[1]);
 	seed            = atoi(argv[2]);
