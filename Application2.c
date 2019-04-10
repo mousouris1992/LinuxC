@@ -401,12 +401,6 @@ void Init(char * argv[])
 	}
 
 	av_customer_handlers = n_tel;
-	free_seats = n_seat;
-
-	for(int i = 0; i<n_seat; i++)
-	{
-		seatsPlan[i] = 0;
-	}
 
 	// Init Mutexes && cond_variables
 	int rc;
@@ -431,6 +425,11 @@ void Init(char * argv[])
 	rc = pthread_cond_init(&av_handler_cond , NULL);
 	checkOperationStatus(_thread_cond_init , rc , 1);
 
+
+	for(int i = 0; i<n_seat; i++)
+	{
+		seatsPlan[i] = 0;
+	}
 
 }
 

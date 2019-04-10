@@ -24,12 +24,32 @@ enum Operation
 
 
 #define BILLION        1000000000L;
-#define n_seat         250
+
+#define n_seat         10
+#define n_zoneA        5
+#define n_zoneB        10
+#define n_zoneC        10
+
+#define p_zoneA        20
+#define p_zoneB        40
+#define p_zoneC        40
+
+#define c_zoneA        30
+#define c_zoneB        25
+#define c_zoneC        20
+
 #define n_tel          8
+#define n_cash         4
+
 #define n_seatMin      1
 #define n_seatMax      5
+
 #define t_seatMin      1 // 5
 #define t_seatMax      5 // 10
+
+#define t_cashMin      2 // 2
+#define t_cashMax      4 // 4
+
 #define p_cardSuccess  90
 #define c_seat         20
 
@@ -44,7 +64,7 @@ int free_seats;
 
 // customer handlers
 int av_customer_handlers; // = n_tel
-
+int av_customer_cahsers;
 
 typedef struct Customer
 {
@@ -81,12 +101,13 @@ pthread_mutex_t balance_access_mutex;
 pthread_mutex_t report_state_mutex;
 
 pthread_cond_t av_handler_cond;
-
+pthread_cond_t av_cahsers_cond;
 //-------------------------------------
 //
 //      Customer Service Functions
 //
 //-------------------------------------
+
 int approveSeatsRequest(Customer * cust , int process_time);
 void bindRequestedSeats(int * seats_index , int seats_requested , int customerId)
 void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
