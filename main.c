@@ -58,6 +58,11 @@ typedef struct Customer
 	pthread_t thread;
 
 	int Id;
+	int seats_requested;
+	int * seats_index;
+	int payment_success;
+	int payment_value;
+	char * error_msg;
 
 }
 Customer;
@@ -90,7 +95,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 
 	int approve;
 
-	printf("\n-Server : processing customer's request for [%i] seconds.." , process_time );
+	//printf("\n-Server : processing customer's request for [%i] seconds.." , process_time );
 
 	sleep(process_time);
 
@@ -133,7 +138,7 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 {
 
 	mutex_lock(&seats_access_mutex);
-	printf("\n - Binding requested seats...");
+	//printf("\n - Binding requested seats...");
 
 	for(int i = 0; i<seats_requested; i++)
 	{
@@ -341,6 +346,18 @@ int main(int argc , char * argv[])
 	for(int i = 0; i<customers_count; i++)
 	{
 		customers[i].Id = i+1;
+		seats_requested = 0;
+		seats_index = 0;
+		payment_success = 0;
+		payment_value = 0;
+		error_msg = "";
+		/*
+		int seats_requested;
+		int * seats_index;
+		int payment_success;
+		int payment_value;
+		char * error_msg;
+		*/
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
 		checkOperationStatus(_thread_create , rc , 1);
 	}
