@@ -53,12 +53,9 @@ enum Operation
 #define p_cardSuccess  90
 
 
-int seed;
 
-// business variables
+
 int balance;
-int Transactions_counter;
-int seatsPlan[n_seat];
 
 int * zones[3];
 int zoneSize[3];
@@ -67,8 +64,8 @@ int zone_costs[3];
 char * zoneNames[3];
 
 
-// customer handlers
-int av_customer_handlers; // = n_tel
+// customer handlers && cashers
+int av_customer_handlers;
 int av_customer_cashers;
 
 typedef struct Customer
@@ -82,8 +79,6 @@ typedef struct Customer
 	int payment_success;
 	int payment_value;
 	char * msg;
-	char * error_msg;
-
 }
 Customer;
 
@@ -91,6 +86,8 @@ Customer;
 
 int customers_count;
 Customer * customers;
+
+int seed;
 
 double m_wait_time;
 double m_total_time;
@@ -108,6 +105,7 @@ pthread_mutex_t report_state_mutex;
 
 pthread_cond_t av_handler_cond;
 pthread_cond_t av_cashers_cond;
+
 //-------------------------------------
 //
 //      Customer Service Functions

@@ -78,7 +78,7 @@ void unBindRequestedSeats(int * seats_index , int seats_requested , int customer
 	mutex_unlock(&seats_access_mutex);
 }
 
-int approvePaymentRequest(int customerId)
+int approvePaymentRequest()
 {
 	int p = getRandom(1 , 100);
 	if ( p <= p_cardSuccess)
@@ -91,7 +91,7 @@ int approvePaymentRequest(int customerId)
 	}
 }
 
-void transferMoneyToAccount(int money , int customerId)
+void transferMoneyToAccount(int money)
 {
 	mutex_lock(&balance_access_mutex);
 	balance += money;
@@ -111,10 +111,6 @@ void * handleCustomer(void * customer)
 	t_wait_end;
 	clock_gettime(CLOCK_REALTIME , &t_start);
 
-	// customer enters the queue of service...
-	//printf("\n\nCustomer#%i : enters the queue!" , tid);
-	//printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
-
 
 	/*
 	  * mutex_lock()
@@ -124,13 +120,10 @@ void * handleCustomer(void * customer)
 	*/
 	mutex_lock(&av_handler_mutex);
 
-	//printf("\n-Report : av_customer_handlers = %i" , av_customer_handlers);
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
-		//printf("\nCustomer#%i : waits in queue until there is an availabe handler..", tid);
 		cond_wait(&av_handler_cond , &av_handler_mutex);
-		//printf("\nCustomer#%i : Finally is his time to get handled..", tid);
 
 	}
 
@@ -140,10 +133,6 @@ void * handleCustomer(void * customer)
 	mutex_unlock(&av_handler_mutex);
 	clock_gettime(CLOCK_REALTIME , &t_wait_end);
 
-
-
-	// customer is handled here..
-	//printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 
 
 	// generate random number from [n_seatMin , n_seatMax]
@@ -156,44 +145,25 @@ void * handleCustomer(void * customer)
     int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
     cust->seats_index = 0;
 
-    //printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
 
 	if( approveSeatsRequest(cust , t_random))
 	{
 		cust->seats_index = malloc(cust->seats_count * sizeof(int));
-		/*
-		if(seats_index_buffer == 0)
-		{
-			printf("\n bad memory on seats_index_buffer");
-		}
-		else
-		{
-			for(int i = 0; i < seats_count; i++)
-			{
-				printf("\n seats_index[%i] = %i" , i , seats_index_buffer[i]);
-			}
-		}
-		*/
+
 
 		// bind requested seats
 		bindRequestedSeats(cust->seats_index , cust->seats_count , tid);
 
-		// proceed to payment
-		//printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
-		//printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
-		//printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
-
 
 		// p_cardSuccess for payment to get approved
 		// else seats gets replaced to seatsPlan
-		if( approvePaymentRequest(tid) )
+		if( approvePaymentRequest() )
 		{
 			int money_to_pay = cust->seats_count * c_seat;
-			transferMoneyToAccount( money_to_pay , tid);
+			transferMoneyToAccount( money_to_pay);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
-			//cust->msg = "Seats reservation succesfull! | TransferId : %i"
-			// print transfer info
+
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
@@ -202,26 +172,18 @@ void * handleCustomer(void * customer)
 			free(cust->seats_index);
 			cust->seats_index = 0;
 			cust->msg = "-Seats reservation rejected | Card Payment failure!";
-			// print transfer info
 		}
 
 	}
-	else
-	{
-
-	}
-	//free(seats_index_buffer);
 
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	//printf("\n\nCustomer#%i : Service Finished!" , tid);
 	av_customer_handlers++;
 
-	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
-    //printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
-	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
+	// sending signal for the next customer in 'queue' so he can get handled by the free customerHandler!
+	pthread_cond_signal(&av_handler_cond);
 	mutex_unlock(&av_handler_mutex);
 
 	//
@@ -530,6 +492,7 @@ void cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex)
 	int rc = pthread_cond_wait(cond , mutex);
 	checkOperationStatus(_thread_cond_wait , rc , 0);
 }
+
 
 void cond_broadcast(pthread_cond_t *cond)
 {

@@ -87,12 +87,12 @@ pthread_cond_t av_handler_cond;
 //      Customer Service Functions
 //
 //-------------------------------------
-int approveSeatsRequest(Customer * cust , int process_time);
-void bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
-void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
-int approvePaymentRequest(int customerId);
-void transferMoneyToAccount(int money , int customerId);
-void * handleCustomer(void * customer);
+int     approveSeatsRequest(Customer * cust , int process_time);
+void    bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
+void    unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
+int     approvePaymentRequest();
+void    transferMoneyToAccount(int money);
+void*   handleCustomer(void * customer);
 
 //-------------------------------------
 //
@@ -100,11 +100,11 @@ void * handleCustomer(void * customer);
 //
 //-------------------------------------
 
-int getRandom(int min , int max);
-void checkOperationStatus(enum Operation op ,  int rc , int return_type);
-void mutex_lock(pthread_mutex_t *mutex);
-void mutex_unlock(pthread_mutex_t *mutex);
-void cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex);
-void cond_broadcast(pthread_cond_t *cond);
-void Init(char * argv[]);
-void cleanUp();
+int    getRandom(int min , int max);
+void   checkOperationStatus(enum Operation op ,  int rc , int return_type);
+void   mutex_lock(pthread_mutex_t *mutex);
+void   mutex_unlock(pthread_mutex_t *mutex);
+void   cond_wait(pthread_cond_t *cond , pthread_cond_t *mutex);
+void   cond_broadcast(pthread_cond_t *cond);
+void   Init(char * argv[]);
+void   cleanUp();
