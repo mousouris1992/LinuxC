@@ -41,6 +41,7 @@ enum Operation
 #define p_cardSuccess  90
 #define c_seat         20
 
+int seed;
 
 // business variables
 int balance = 0;
@@ -70,7 +71,6 @@ Customer;
 
 int customers_count = 0;
 Customer * customers = 0;
-int random_seed = 0;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
@@ -437,7 +437,7 @@ int main(int argc , char * argv[])
 
 int getRandom(int min , int max)
 {
-    return (rand_r()%(max - min) + min);
+    return (rand_r(seed)%(max - min) + min);
 }
 
 
@@ -527,10 +527,10 @@ void Init(char * argv[])
 	av_customer_handlers = n_tel;
 
 	int rc;
-	srand(time(argv[2])); // randomize seed
+	srand(time(NULL)); // randomize seed
 
 	customers_count = atoi(argv[1]);
-	//random_seed     = atoi(argv[2]);
+	seed            = atoi(argv[2]);
 
 	// Init customers
 	customers = malloc(customers_count * sizeof(Customer));
