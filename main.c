@@ -282,7 +282,7 @@ void * handleCustomer(void * customer)
 		// else seats gets replaced to seatsPlan
 		if( approvePaymentRequest(tid) )
 		{
-			int money_to_pay = seats_count * c_seat;
+			int money_to_pay = cust->seats_count * c_seat;
 			transferMoneyToAccount( money_to_pay , tid);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
