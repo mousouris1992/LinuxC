@@ -228,6 +228,8 @@ void * handleCustomer(void * customer)
 	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
 	int * seats_index_buffer = 0;
 	printf("\n-Server : About to approve Customer's#%i seats Request..",tid);
+
+#ifdef PHASE_2
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
 		// bind requested seats
@@ -259,7 +261,7 @@ void * handleCustomer(void * customer)
 	{
 		// print error message and exit
 	}
-
+#endif
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
