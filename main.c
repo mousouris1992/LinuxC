@@ -363,7 +363,7 @@ int main(int argc , char * argv[])
 	for(int i = 0; i<customers_count; i++)
 	{
 		customers[i].Id = i+1;
-		customers[i].seats_requested = 0;
+		customers[i].seats_count = 0;
 		customers[i].seats_index = 0;
 		customers[i].payment_success = 0;
 		customers[i].payment_value = 0;
