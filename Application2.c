@@ -350,7 +350,7 @@ int main(int argc , char * argv[])
 	{
 		printf("\n ==========| %s |==========\n" , zoneNames[i] );
 
-		for(int l = 0; i<zonesSize[i]; l++)
+		for(int l = 0; l<zonesSize[i]; l++)
 		{
 			printf("LINE%i   " , l);
 		}
