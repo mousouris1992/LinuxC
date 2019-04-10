@@ -101,6 +101,12 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 	else
 	{
 		seats_index = malloc( seats_requested * sizeof(int));
+		if(!seats_index)
+		{
+			printf("\n -- approveSeatsRequest()::seats_index::malloc() failed!");
+			exit(-1);
+		}
+		
 		int count = 0;
 
 		for(int i = 0; i<n_seat; i++)
@@ -226,13 +232,14 @@ void * handleCustomer(void * customer)
 	// if (requested seats get approved) -> bind seats && payment process
 	// else -> error message && current customer's handling completes
 	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
-	int * seats_index_buffer = 0;
+	int * seats_index_buffer;
 	printf("\n-Server : About to approve Customer's#%i seats Request..",tid);
 
 #define PHASE_2
 #ifdef PHASE_2
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
+		printf("\n-Server : Seats request approved for Customer#%i .. ", tid);
 		/*
 		// bind requested seats
 		bindRequestedSeats(seats_index_buffer , seats_count , tid);
