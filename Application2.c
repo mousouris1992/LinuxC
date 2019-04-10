@@ -348,7 +348,7 @@ int main(int argc , char * argv[])
 	printf("\n\n -------- Theatre SeatsPlan --------");
 
 	FILE * output;
-	output = fopen("temp\\output.txt" , "w");
+	output = fopen("temp/output.txt" , "w");
 
 	for(int i = 0; i<3; i++)
 	{
