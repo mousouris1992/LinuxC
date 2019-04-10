@@ -348,26 +348,54 @@ int main(int argc , char * argv[])
 
 	for(int i = 0; i<3; i++)
 	{
-		printf("\n ==========| %s |==========" , zoneNames[i] );
-		for(int line = 0; line<zoneSize[i]; line++)
+		printf("\n ==========| %s |==========\n" , zoneNames[i] );
+
+		for(int l = 0; i<zonesSize[i]; l++)
 		{
-			printf("\n ----------[ Line : %i ]----------\n" , line);
-			for(int seat = 0; seat<n_seat; seat++)
+			printf("LINE%i   " , l);
+		}
+		
+		for(int seat = 0; seat<n_seat; seat++)
+		{
+
+			for(int line = 0; line<zonesSize[i]; line++)
 			{
 				int customer_id = zones[i][n_seat * line + seat];
 				if(customer_id != 0)
 				{
-					printf("[ %i -> customer : %i ]  " ,seat , customer_id );
+					printf("[%i:customer%i]  " , seat , customer_id );
 				}
 				else
 				{
-					printf("[ %i -> free ]  " , seat );
+					printf("[%i:free]  " , seat );
 				}
 			}
 			printf("\n");
 		}
 		printf("\n\n");
 	}
+
+	/*
+	printf("\n ==========| %s |==========" , zoneNames[i] );
+	for(int line = 0; line<zoneSize[i]; line++)
+	{
+		printf("\n ----------[ Line : %i ]----------\n" , line);
+		for(int seat = 0; seat<n_seat; seat++)
+		{
+			int customer_id = zones[i][n_seat * line + seat];
+			if(customer_id != 0)
+			{
+				printf("[ %i : customer%i ]  " , seat , customer_id );
+			}
+			else
+			{
+				printf("[ %i : free ]  " , seat );
+			}
+		}
+		printf("\n");
+	}
+	printf("\n\n");
+	*/
 
 	printf("\n -------- Statistics -------- \n");
 	printf("\n      -average wait_time    : %f" , m_wait_time);
