@@ -81,6 +81,11 @@ pthread_cond_t av_handler_cond;
 //
 //-------------------------------------
 
+bool approveSeatsRequest(int count)
+{
+	return false;
+}
+
 void * handleCustomer(void * customer)
 {
 
@@ -124,8 +129,32 @@ void * handleCustomer(void * customer)
 
 
 
-	// services being handled...
+	// customer is handled here..
 	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
+
+	// generate random number from [n_seatMin , n_seatMax]
+	// seats to be taken by current customer
+	int seats_count = getRandom(n_seatMin , n_seatMax);
+
+	// time to fetch the request by the customerHandler
+	// if (requested seats get approved) -> bind seats && payment process
+	// else -> error message && current customer's handling completes
+	int t_random = getRandom(t_seatMin , t_seatMax);
+	sleep(t_random);
+
+	if ( approveSeatsRequest(seats_count) )
+	{
+		// proceed to payment
+
+		// p_cardSuccess for payment to get approved
+		// else seats gets replaced to seatsPlan
+	}
+	else
+	{
+		// error message and exit
+	}
+
+
 	mutex_lock(&service_mutex);
 	// ...
 	// ..
