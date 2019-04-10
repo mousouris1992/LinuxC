@@ -46,13 +46,13 @@ int approveSeatsRequest(Customer * cust)
 				if(zones[zoneId][i * n_seat + j] == 0)
 				{
 					cust->seats_index[av_seats_count] = i * n_seat + j;
-					//printf("\nseats count : %i" , av_seats_count);
 					av_seats_count++;
 				}
 
 				if(av_seats_count == seats_count)
 				{
 					seats_found = 1;
+					free_seats[zoneId] -= seats_count;
 					break;
 				}
 			}
@@ -164,7 +164,11 @@ void * handleCustomer(void * customer)
 #ifdef PHASE_2
 	if( approveSeatsRequest(cust))
 	{
-		printf("\n -Seats approved!");
+		printf("\n -Seats approved : ");
+		for(int i = 0; i<cust->seats_count; i++)
+		{
+			printf("[%i]" , cust->seats_index[i]);
+		}
 		/*
 		if( approvePaymentRequest(tid) )
 		{
