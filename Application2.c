@@ -352,7 +352,7 @@ int main(int argc , char * argv[])
 
 		for(int l = 0; l<zoneSize[i]; l++)
 		{
-			printf("LINE%i   " , l);
+			printf("LINE%i         " , l);
 		}
 		printf("\n");
 		for(int seat = 0; seat<n_seat; seat++)
@@ -363,11 +363,11 @@ int main(int argc , char * argv[])
 				int customer_id = zones[i][n_seat * line + seat];
 				if(customer_id != 0)
 				{
-					printf("[%i:customer%i]  " , seat , customer_id );
+					printf("[%i:cust%i] " , seat , customer_id );
 				}
 				else
 				{
-					printf("[%i:free]  " , seat );
+					printf("[%i:free  ] " , seat );
 				}
 			}
 			printf("\n");
