@@ -90,6 +90,8 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 
 	int approve;
 
+	printf("\n-Server : processing customer's request for [%i] seconds.." , process_time );
+
 	sleep(process_time);
 
 	mutex_lock(&seats_access_mutex);
@@ -106,7 +108,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 			printf("\n -- approveSeatsRequest()::seats_index::malloc() failed!");
 			exit(-1);
 		}
-		
+
 		int count = 0;
 
 		for(int i = 0; i<n_seat; i++)
@@ -233,7 +235,7 @@ void * handleCustomer(void * customer)
 	// else -> error message && current customer's handling completes
 	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
 	int * seats_index_buffer;
-	printf("\n-Server : About to approve Customer's#%i seats Request..",tid);
+	printf("\n-Customer#%i : requesting [%i] seats to server!",tid , seats_count);
 
 #define PHASE_2
 #ifdef PHASE_2
