@@ -28,8 +28,8 @@ enum Operation
 #define n_tel          8
 #define n_seatMin      1
 #define n_seatMax      5
-#define t_seatMin      1 // 5
-#define t_seatMax      5 // 10
+#define t_seatMin      5 // 5
+#define t_seatMax      10 // 10
 #define p_cardSuccess  90
 #define c_seat         20
 
