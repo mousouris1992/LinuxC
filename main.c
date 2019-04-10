@@ -349,6 +349,7 @@ void * handleCustomer(void * customer)
 
 	printf("\n--Wait time  : %f" , wait_time);
 	printf("\n--Total time : %f" , total_time);
+	printf("\n\n");
 
 	mutex_unlock(&report_state_mutex);
 
