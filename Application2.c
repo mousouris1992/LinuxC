@@ -87,7 +87,7 @@ void bindRequestedSeats(Customer * cust)
 
 }
 
-void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
+void unBindRequestedSeats(Customer * cust)
 {
 	mutex_lock(&seats_access_mutex);
 	for(int i = 0; i<cust->seats_count; i++)
@@ -99,8 +99,9 @@ void unBindRequestedSeats(int * seats_index , int seats_requested , int customer
 	mutex_unlock(&seats_access_mutex);
 }
 
-int approvePaymentRequest(int customerId)
+int approvePaymentRequest()
 {
+	sleep(getRandom(t_cashMin , t_cashMax));
 	int p = getRandom(1 , 100);
 	if ( p <= p_cardSuccess)
 	{
@@ -128,8 +129,10 @@ void * handleCustomer(void * customer)
 
 	struct timespec
 	t_start,
+	t_casher_start,
 	t_global_end,
-	t_wait_end;
+	t_wait_end,
+	t_casher_end
 	clock_gettime(CLOCK_REALTIME , &t_start);
 
 
@@ -140,8 +143,6 @@ void * handleCustomer(void * customer)
 	  * else -> customer waits in the queue until a customer handler is free
 	*/
 	mutex_lock(&av_handler_mutex);
-
-	//printf("\n-Report : av_customer_handlers = %i" , av_customer_handlers);
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
@@ -175,43 +176,48 @@ void * handleCustomer(void * customer)
 	// customer selects how many seats[n_seatMin , n_seatMax]
 	cust->seats_count = getRandom(n_seatMin , n_seatMax);
 
-#define PHASE_2
-#ifdef PHASE_2
+
+    // check customer's seats request
 	if( approveSeatsRequest(cust))
 	{
-		printf("\n -Seats approved at %s : ",zoneNames[cust->zoneId]);
-		for(int i = 0; i<cust->seats_count; i++)
+		// bind requested seats
+		bindRequestedSeats(cust);
+
+        clock_gettime(CLOCK_REALTIME , &t_casher_start);
+		mutex_lock(&av_cashers_mutex);
+		while(av_customer_cashers == 0)
 		{
-			printf("[%i]" , cust->seats_index[i]);
+			cond_wait(&av_cashers_cond , &av_customer_cashers);
 		}
 
-		if( approvePaymentRequest(tid) )
+		av_customer_cashers--;
+		mutex_unlock(&av_cashers_mutex);
+		clock_gettime(CLOCK_REALTIME , &t_casher_end);
+
+		if( approvePaymentRequest() )
 		{
 			int money_to_pay = cust->seats_count * c_seat;
 			transferMoneyToAccount( money_to_pay , tid);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
-			//cust->msg = "Seats reservation succesfull! | TransferId : %i"
-			// print transfer info
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
-			unBindRequestedSeats(cust->seats_index , cust->seats_count , tid);
+			unBindRequestedSeats(cust);
 			cust->payment_success = 0;
-			free(cust->seats_index);
-			cust->seats_index = 0;
 			cust->msg = "-Seats reservation rejected | Card Payment failure!";
-			// print transfer info
 		}
-		
+
+		mutex_lock(&av_cashers_mutex);
+		av_customer_cashers++;
+		pthread_cond_signal(&av_cashers_cond);
+		mutex_unlock(&av_cashers_mutex);
 
 	}
 	else
 	{
-		printf("\n -Seats rejected!");
 
 	}
-#endif
 
 
 	// again , we have to mutex_lock() in order to access shared variable
@@ -224,10 +230,12 @@ void * handleCustomer(void * customer)
 
 	/* ------ customer report ------- */
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
-	double wait_time  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
+	double wait_time_h  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
+	double wait_time_c  = (t_casher_end.tv_sec - t_casher_start.tv_sec) + (t_casher_end.tv_nsec - t_casher_start.tv_nsec) / BILLION;
+
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
-	m_wait_time += wait_time;
+	m_wait_time += (wait_time_h + wait_time_c) / 2.0d ;
 	m_total_time += total_time;
 
 	mutex_lock(&report_state_mutex);
@@ -394,6 +402,10 @@ void Init(char * argv[])
 			zones[i][j] = 0;
 		}
 	}
+
+	zone_costs[0] = c_zoneA;
+	zone_costs[1] = c_zoneB;
+	zone_costs[2] = c_zoneC;
 
 	zoneNames[0] = "zoneA";
 	zoneNames[1] = "zoneB";

@@ -51,7 +51,6 @@ enum Operation
 #define t_cashMax      4 // 4
 
 #define p_cardSuccess  90
-#define c_seat         20
 
 
 int seed;
@@ -64,6 +63,7 @@ int seatsPlan[n_seat];
 int * zones[3];
 int zoneSize[3];
 int free_seats[3];
+int zone_costs[3];
 char * zoneNames[3];
 
 
