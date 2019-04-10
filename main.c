@@ -119,7 +119,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 				count++;
 			}
 
-			if(count == seats_requested)
+			if(count == seats_requested -1)
 			{
 				break;
 			}
