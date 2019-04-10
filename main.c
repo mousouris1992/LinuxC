@@ -135,23 +135,11 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 	mutex_lock(&seats_access_mutex);
 	printf("\n - Binding requested seats...");
 
-	if(!seats_index)
-	{
-		printf("\n ----bad memory on seats_index!");
-		return;
-	}
-
-	for(int i = 0; i<seats_requested; i++)
-	{
-		printf("\nseats_index[%i] = %i" , i , seats_index[i]);
-	}
-
-	/*
 	for(int i = 0; i<seats_requested; i++)
 	{
 		seatsPlan[seats_index[i]] = customerId;
 	}
-	*/
+
 	mutex_unlock(&seats_access_mutex);
 
 }
@@ -290,8 +278,6 @@ void * handleCustomer(void * customer)
 			unBindRequestedSeats(seats_index_buffer , seats_count , tid);
 			// print transfer info
 		}
-
-
 
 	}
 	else
