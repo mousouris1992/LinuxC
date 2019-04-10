@@ -276,15 +276,14 @@ void * handleCustomer(void * customer)
 		printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
 		printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
 
-		/*
+
 		// p_cardSuccess for payment to get approved
 		// else seats gets replaced to seatsPlan
 		if( approvePaymentRequest(tid) )
 		{
-
-			transferMoneyToAccount( seats_count * c_seat , tid);
+			int money_to_pay = seats_count * c_seat;
+			transferMoneyToAccount( money_to_pay , tid);
 			// print transfer info
-
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
@@ -292,7 +291,7 @@ void * handleCustomer(void * customer)
 			// print transfer info
 		}
 
-		*/
+
 
 	}
 	else
