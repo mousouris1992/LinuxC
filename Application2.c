@@ -348,7 +348,7 @@ int main(int argc , char * argv[])
 	printf("\n\n -------- Theatre SeatsPlan --------");
 
 	FILE * output;
-	output = fopen("temp/output.txt" , "w");
+	output = fopen("output.txt" , "w");
 
 	for(int i = 0; i<3; i++)
 	{
@@ -416,7 +416,7 @@ int main(int argc , char * argv[])
 	printf("\n     -average total_time   : %f" , m_total_time);
 	printf("\n     -Total execution time : %f" , total_execution_time);
 
-
+	printf("\n\n--SeatsPlan has been also written to file : 'output.txt'!");
 
 	// clean up
 	cleanUp();
