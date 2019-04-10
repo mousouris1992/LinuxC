@@ -96,11 +96,11 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 	if(free_seats < seats_requested)
 	{
 		seats_index = 0;
-		aprove = 0;
+		approve = 0;
 	}
 	else
 	{
-		seats_index = malloc( seats_count * sizeof(int));
+		seats_index = malloc( seats_requested * sizeof(int));
 		int count = 0;
 
 		for(int i = 0; i<n_seat; i++)
@@ -117,7 +117,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 			}
 		}
 
-		aprove = 1;
+		approve = 1;
 	}
 
 	mutex_unlock(&seats_access_mutex);
