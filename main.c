@@ -344,10 +344,10 @@ void * handleCustomer(void * customer)
 	}
 	else
 	{
-		printf("%s" ,cust->msg);
+		printf("\n%s" ,cust->msg);
 	}
 	mutex_unlock(&report_state_mutex);
-	
+
 
 	if(cust->seats_index != 0)
 	{
