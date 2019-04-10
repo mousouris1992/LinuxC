@@ -44,11 +44,11 @@ enum Operation
 #define n_seatMin      1
 #define n_seatMax      5
 
-#define t_seatMin      1 // 5
-#define t_seatMax      2 // 10
+#define t_seatMin      5 // 5
+#define t_seatMax      10 // 10
 
-#define t_cashMin      1 // 2
-#define t_cashMax      2 // 4
+#define t_cashMin      2 // 2
+#define t_cashMax      4 // 4
 
 #define p_cardSuccess  90
 
