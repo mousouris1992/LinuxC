@@ -97,20 +97,15 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 	mutex_lock(&seats_access_mutex);
 	if(free_seats < seats_requested)
 	{
-		seats_index = 0;
+		//seats_index = 0;
 		approve = 0;
 	}
 	else
 	{
-		seats_index = malloc( seats_requested * sizeof(int));
-		if(!seats_index)
-		{
-			printf("\n -- approveSeatsRequest()::seats_index::malloc() failed!");
-			exit(-1);
-		}
+		//seats_index = malloc( seats_requested * sizeof(int));
+
 
 		int count = 0;
-
 		for(int i = 0; i<n_seat; i++)
 		{
 			if(seatsPlan[i] == 0)
@@ -240,24 +235,35 @@ void * handleCustomer(void * customer)
 	// customer is handled here..
 	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 
-	// generate random number from [n_seatMin , n_seatMax]
-	// seats to be taken by current customer
-	int seats_count = getRandom(n_seatMin , n_seatMax);
 
-	// time to fetch the request by the customerHandler
-	// if (requested seats get approved) -> bind seats && payment process
-	// else -> error message && current customer's handling completes
-	int t_random = getRandom(1 , 5); //sleep(t_random);
-	int * seats_index_buffer;
-	printf("\n-Customer#%i : requesting [%i] seats to server!",tid , seats_count);
 
 #define PHASE_2
 #ifdef PHASE_2
+
+	// generate random number from [n_seatMin , n_seatMax]
+    // seats to be taken by current customer
+    int seats_count = getRandom(n_seatMin , n_seatMax);
+
+    // time to fetch the request by the customerHandler
+    // if (requested seats get approved) -> bind seats && payment process
+    // else -> error message && current customer's handling completes
+    int t_random = getRandom(1 , 5); //sleep(t_random);
+    int * seats_index_buffer = malloc(seats_count * sizeof(int));
+
+    printf("\n-Customer#%i : requesting [%i] seats to server!",tid , seats_count);
+
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
 		if(seats_index_buffer == 0)
 		{
 			printf("\n bad memory on seats_index_buffer");
+		}
+		else
+		{
+			for(int i = 0; i < seats_count; i++)
+			{
+				printf("\n seats_index[%i] = %i" , i , seats_index_buffer[i]);
+			}
 		}
 
 		// bind requested seats
@@ -285,12 +291,13 @@ void * handleCustomer(void * customer)
 		}
 
 		*/
-		free(seats_index_buffer);
+
 	}
 	else
 	{
 		// print error message and exit
 	}
+	free(seats_index_buffer);
 #endif
 
 	// again , we have to mutex_lock() in order to access shared variable
