@@ -42,6 +42,7 @@ int approveSeatsRequest(Customer * cust)
 			av_seats_count = 0;
 			for(int j = 0; j<n_seat; j++)
 			{
+				printf("A");
 				if(zones[zoneId][i * n_seat + j] != 0)
 				{
 					cust->seats_index[av_seats_count] = i * n_seat + j;
