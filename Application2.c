@@ -352,7 +352,7 @@ int main(int argc , char * argv[])
 
 		for(int l = 0; l<zoneSize[i]; l++)
 		{
-			printf("LINE%i         " , l);
+			printf("LINE%i       " , l);
 		}
 		printf("\n");
 		for(int seat = 0; seat<n_seat; seat++)
@@ -367,7 +367,7 @@ int main(int argc , char * argv[])
 				}
 				else
 				{
-					printf("[%i:free  ] " , seat );
+					printf("[%i:free] " , seat );
 				}
 			}
 			printf("\n");
