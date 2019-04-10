@@ -187,7 +187,7 @@ void * handleCustomer(void * customer)
 		mutex_lock(&av_cashers_mutex);
 		while(av_customer_cashers == 0)
 		{
-			cond_wait(&av_cashers_cond , &av_customer_cashers);
+			cond_wait(&av_cashers_cond , &av_cashers_mutex);
 		}
 
 		av_customer_cashers--;
