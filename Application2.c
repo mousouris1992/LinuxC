@@ -164,7 +164,7 @@ void * handleCustomer(void * customer)
 #ifdef PHASE_2
 	if( approveSeatsRequest(cust))
 	{
-		printf("\n -Seats approved : ");
+		printf("\n -Seats approved at %s : ",zoneNames[cust->zoneId]);
 		for(int i = 0; i<cust->seats_count; i++)
 		{
 			printf("[%i]" , cust->seats_index[i]);
@@ -379,6 +379,10 @@ void Init(char * argv[])
 			zones[i][j] = 0;
 		}
 	}
+
+	zoneNames[0] = "zoneA";
+	zoneNames[1] = "zoneB";
+	zoneNames[2] = "zoneC";
 
 	// Init Mutexes && cond_variables
 	int rc;

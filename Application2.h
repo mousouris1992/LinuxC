@@ -64,6 +64,7 @@ int seatsPlan[n_seat];
 int * zones[3];
 int zoneSize[3];
 int free_seats[3];
+char * zoneNames[3];
 
 
 // customer handlers
