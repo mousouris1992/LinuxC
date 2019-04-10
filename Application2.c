@@ -158,6 +158,7 @@ void * handleCustomer(void * customer)
 	// customer selects how many seats[n_seatMin , n_seatMax]
 	cust->seats_count = getRandom(n_seatMin , n_seatMax);
 
+#define PHASE_2
 #ifdef PHASE_2
 	if( approveSeatsRequest(cust))
 	{
