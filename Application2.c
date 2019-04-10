@@ -354,7 +354,7 @@ int main(int argc , char * argv[])
 		{
 			printf("LINE%i   " , l);
 		}
-		
+		printf("\n");
 		for(int seat = 0; seat<n_seat; seat++)
 		{
 
