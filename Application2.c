@@ -340,10 +340,15 @@ int main(int argc , char * argv[])
 	m_wait_time  /= (double)customers_count;
 	m_total_time /= (double)customers_count;
 
+
+
 	printf("\n\n\n -------- Theatre Report --------");
 	printf("\n\n      -Total Customers handled : %i" , customers_count);
 	printf("\n      -Total Balance : %i" , balance);
 	printf("\n\n -------- Theatre SeatsPlan --------");
+
+	File * output;
+	output = fopen("temp\\output.txt" , "w");
 
 	for(int i = 0; i<3; i++)
 	{
@@ -362,17 +367,21 @@ int main(int argc , char * argv[])
 				int customer_id = zones[i][n_seat * line + seat];
 				if(customer_id != 0)
 				{
-					printf("[%i:cust%i]" , seat , customer_id );
+					printf("[%i:cust%i] " , seat , customer_id );
+					fprintf("[%i:cust%i] " , seat , customer_id );
 				}
 				else
 				{
-					printf("[%i:free]" , seat );
+					printf("[%i:free] " , seat );
+					fprintf("[%i:free] " , seat );
 				}
 			}
 			printf("\n");
 		}
 		printf("\n\n");
 	}
+
+	fclose(output);)
 
 	/*
 	printf("\n ==========| %s |==========" , zoneNames[i] );
