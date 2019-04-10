@@ -347,7 +347,7 @@ int main(int argc , char * argv[])
 
 
 	// clean up
-	free(customers);
+	cleanUp();
 
     printf("\n");
     return 0;
@@ -491,5 +491,31 @@ void Init(char * argv[])
 	{
 		seatsPlan[i] = 0;
 	}
+
+}
+
+void cleanUp()
+{
+
+	free(customers);
+
+	rc = pthread_mutex_destroy(&mutex0);
+    checkOperationStatus(_mutex_destroy , rc , 1);
+
+	rc = pthread_mutex_destroy(&av_handler_mutex);
+	checkOperationStatus(_mutex_destroy , rc , 1);
+
+    rc = pthread_mutex_destroy(&service_mutex);
+    checkOperationStatus(_mutex_destroy , rc , 1);
+
+	rc = pthread_mutex_destroy(&seats_access_mutex);
+    checkOperationStatus(_mutex_destroy , rc , 1);
+
+	rc = pthread_mutex_destroy(&balance_access_mutex);
+	checkOperationStatus(_mutex_destroy , rc , 1);
+
+	rc = pthread_cond_destroy(&av_handler_cond);
+	checkOperationStatus(_thread_cond_destroy , rc , 1);
+
 
 }
