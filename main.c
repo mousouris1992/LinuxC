@@ -255,10 +255,13 @@ void * handleCustomer(void * customer)
 #ifdef PHASE_2
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
-		//printf("\n-Server : Seats request approved for Customer#%i .. ", tid);
+		if(seats_index_buffer == 0)
+		{
+			printf("\n bad memory on seats_index_buffer");
+		}
 
 		// bind requested seats
-		bindRequestedSeats(seats_index_buffer , seats_count , tid);
+		//bindRequestedSeats(seats_index_buffer , seats_count , tid);
 
 		// proceed to payment
 		printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
