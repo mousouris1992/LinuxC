@@ -342,6 +342,37 @@ int main(int argc , char * argv[])
 	m_total_time /= (double)customers_count;
 
 	printf("\n\n\n -------- Theatre Report --------");
+	printf("\n\n      -Total Customers handled : %i" , customers_count);
+	printf("\n      -Total Balance : %i" , balance);
+	printf("\n\n -------- Theatre SeatsPlan --------");
+
+	for(int i = 0; i<3; i++)
+	{
+		printf("\n ==========| %s |==========" , zoneNames[i] );
+		for(int line = 0; line<zoneSize[i]; line++)
+		{
+			printf("\n ----------[ Line : %i ]----------\n" , line);
+			for(int seat = 0; seat<n_seat; seat++)
+			{
+				int customer_id = zones[i][n_seat * line + seat];
+				if(customer_id != 0)
+				{
+					printf("[seat : %i | customer : %i ]" ,seat , customer_id );
+				}
+				else
+				{
+					printf("[seat : %i | free ]" , seat );
+				}
+			}
+			printf("\n");
+		}
+		printf("\n\n");
+	}
+
+	printf("\n -------- Statistics -------- \n");
+	printf("\n      -average wait_time    : %f" , m_wait_time);
+	printf("\n      -average total_time   : %f" , m_total_time);
+	printf("\n      -Total execution time : %f" , total_execution_time);
 
 
 
