@@ -137,12 +137,13 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 {
 
 	mutex_lock(&seats_access_mutex);
-
+	printf("\n - Binding requested seats...");
+	/*
 	for(int i = 0; i<seats_requested; i++)
 	{
 		seatsPlan[seats_index[i]] = customerId;
 	}
-
+	*/
 	mutex_unlock(&seats_access_mutex);
 
 }
