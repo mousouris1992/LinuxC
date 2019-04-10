@@ -317,7 +317,6 @@ int main(int argc , char * argv[])
 		customers[i].payment_success = 0;
 		customers[i].payment_value = 0;
 		customers[i].msg = "";
-		customers[i].error_msg = "";
 
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
 		checkOperationStatus(_thread_create , rc , 1);
@@ -398,9 +397,9 @@ int main(int argc , char * argv[])
 	*/
 
 	printf("\n -------- Statistics -------- \n");
-	printf("\n      -average wait_time    : %f" , m_wait_time);
-	printf("\n      -average total_time   : %f" , m_total_time);
-	printf("\n      -Total execution time : %f" , total_execution_time);
+	printf("\n     -average wait_time    : %f" , m_wait_time);
+	printf("\n     -average total_time   : %f" , m_total_time);
+	printf("\n     -Total execution time : %f" , total_execution_time);
 
 
 
