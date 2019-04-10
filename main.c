@@ -227,6 +227,7 @@ void * handleCustomer(void * customer)
 	// else -> error message && current customer's handling completes
 	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
 	int * seats_index_buffer = 0;
+	printf("\n-Server : About to approve Customer's#%i seats Request..",tid);
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
 		// bind requested seats
