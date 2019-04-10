@@ -110,7 +110,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 		{
 			if(seatsPlan[i] == 0)
 			{
-				printf("\n -- seats_index[%i] = %i" , count , i );
+				//printf("\n -- seats_index[%i] = %i" , count , i );
 				seats_index[count] = i;
 				count++;
 			}
@@ -254,6 +254,7 @@ void * handleCustomer(void * customer)
 
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
+		/*
 		if(seats_index_buffer == 0)
 		{
 			printf("\n bad memory on seats_index_buffer");
@@ -265,9 +266,10 @@ void * handleCustomer(void * customer)
 				printf("\n seats_index[%i] = %i" , i , seats_index_buffer[i]);
 			}
 		}
+		*/
 
 		// bind requested seats
-		//bindRequestedSeats(seats_index_buffer , seats_count , tid);
+		bindRequestedSeats(seats_index_buffer , seats_count , tid);
 
 		// proceed to payment
 		printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
