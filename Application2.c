@@ -357,11 +357,11 @@ int main(int argc , char * argv[])
 				int customer_id = zones[i][n_seat * line + seat];
 				if(customer_id != 0)
 				{
-					printf("[seat : %i | customer : %i ]" ,seat , customer_id );
+					printf("[ %i -> customer : %i ]  " ,seat , customer_id );
 				}
 				else
 				{
-					printf("[seat : %i | free ]" , seat );
+					printf("[ %i -> free ]  " , seat );
 				}
 			}
 			printf("\n");
