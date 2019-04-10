@@ -90,9 +90,9 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 
 	int approve;
 
-	mutex_lock(&seats_access_mutex);
-
 	sleep(process_time);
+
+	mutex_lock(&seats_access_mutex);
 	if(free_seats < seats_requested)
 	{
 		seats_index = 0;
