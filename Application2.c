@@ -162,6 +162,7 @@ void * handleCustomer(void * customer)
 #ifdef PHASE_2
 	if( approveSeatsRequest(cust))
 	{
+		printf("\n -Seats approved!");
 		/*
 		if( approvePaymentRequest(tid) )
 		{
@@ -186,6 +187,7 @@ void * handleCustomer(void * customer)
 	}
 	else
 	{
+		printf("\n -Seats rejected!");
 
 	}
 #endif
