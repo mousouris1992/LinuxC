@@ -360,7 +360,7 @@ void Init(char * argv[])
 		zones[i] = malloc( free_seats[i] * sizeof(int));
 		if(!zones[i])
 		{
-			prinf("\n-Error : zones[i]::malloc() failed!");
+			printf("\n-Error : zones[i]::malloc() failed!");
 			printf("\n--Exiting program...");
 			exit(-1);
 		}
