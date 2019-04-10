@@ -229,9 +229,11 @@ void * handleCustomer(void * customer)
 	int * seats_index_buffer = 0;
 	printf("\n-Server : About to approve Customer's#%i seats Request..",tid);
 
+#define PHASE_2
 #ifdef PHASE_2
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
+		/*
 		// bind requested seats
 		bindRequestedSeats(seats_index_buffer , seats_count , tid);
 
@@ -254,8 +256,8 @@ void * handleCustomer(void * customer)
 			unBindRequestedSeats(seats_index_buffer , seats_count , tid);
 			// print transfer info
 		}
-
 		free(seats_index_buffer);
+		*/
 	}
 	else
 	{
