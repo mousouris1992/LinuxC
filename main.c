@@ -62,6 +62,7 @@ typedef struct Customer
 	int * seats_index;
 	int payment_success;
 	int payment_value;
+	char * msg;
 	char * error_msg;
 
 }
@@ -77,6 +78,7 @@ pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
 pthread_mutex_t service_mutex;
 pthread_mutex_t seats_access_mutex;
 pthread_mutex_t balance_access_mutex;
+pthread_mutex_t report_state_mutex;
 
 pthread_cond_t av_handler_cond;
 
@@ -100,11 +102,11 @@ int approveSeatsRequest(Customer * cust , int process_time)
 	{
 		if(free_seats == 0)
 		{
-			cust->error_msg = "Seats reservation cancelled | Theatre is full!";
+			cust->msg = "Seats reservation rejected | Theatre is full!";
 		}
 		else
 		{
-			cust->error_msg = "Seats reservation cancelled | Not enough free seats!";
+			cust->msg = "Seats reservation rejected | Not enough free seats!";
 		}
 		approve = 0;
 	}
@@ -206,7 +208,7 @@ void * handleCustomer(void * customer)
 	clock_gettime(CLOCK_REALTIME , &t_start);
 
 	// customer enters the queue of service...
-	printf("\n\nCustomer#%i : enters the queue!" , tid);
+	//printf("\n\nCustomer#%i : enters the queue!" , tid);
 	//printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
 
 
@@ -218,13 +220,13 @@ void * handleCustomer(void * customer)
 	*/
 	mutex_lock(&av_handler_mutex);
 
-	printf("\n-Report : av_customer_handlers = %i" , av_customer_handlers);
+	//printf("\n-Report : av_customer_handlers = %i" , av_customer_handlers);
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
-		printf("\nCustomer#%i : waits in queue until there is an availabe handler..", tid);
+		//printf("\nCustomer#%i : waits in queue until there is an availabe handler..", tid);
 		cond_wait(&av_handler_cond , &av_handler_mutex);
-		printf("\nCustomer#%i : Finally is his time to get handled..", tid);
+		//printf("\nCustomer#%i : Finally is his time to get handled..", tid);
 
 	}
 
@@ -237,7 +239,7 @@ void * handleCustomer(void * customer)
 
 
 	// customer is handled here..
-	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
+	//printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 
 
 	// generate random number from [n_seatMin , n_seatMax]
@@ -250,7 +252,7 @@ void * handleCustomer(void * customer)
     int t_random = getRandom(1 , 5); //sleep(t_random);
     cust->seats_index = 0;
 
-    printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
+    //printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
 
 	if( approveSeatsRequest(cust , t_random))
 	{
@@ -286,6 +288,7 @@ void * handleCustomer(void * customer)
 			transferMoneyToAccount( money_to_pay , tid);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
+			//cust->msg = "Seats reservation succesfull! | TransferId : %i"
 			// print transfer info
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
@@ -294,7 +297,7 @@ void * handleCustomer(void * customer)
 			cust->payment_success = 0;
 			free(cust->seats_index);
 			cust->seats_index = 0;
-			cust->error_msg = "Seats reservation cancelled | Card Payment failure!";
+			cust->msg = "-Seats reservation rejected | Card Payment failure!";
 			// print transfer info
 		}
 
@@ -309,7 +312,7 @@ void * handleCustomer(void * customer)
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	printf("\n\nCustomer#%i : Service Finished!" , tid);
+	//printf("\n\nCustomer#%i : Service Finished!" , tid);
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
@@ -324,13 +327,32 @@ void * handleCustomer(void * customer)
 
 
 	/* customer Report */
+	mutex_lock(&report_state_mutex);
+
+	printf("\n\n   ____Customer Report____");
+	printf("\n-customerId : %i" , tid);
+	if(cust->payment_success)
+	{
+		printf("\n-Seats reservation -> succesfull ! ");
+		printf("\n      - transferId : %i" , tid);
+		printf("\n      - Seats Reserved : ");
+		for(int i = 0; i<cust->seats_count; i++)
+		{
+			printf(" [%i]" , cust->seats_index[i]);
+		}
+		printf("\n      - Payment Value : %i ", cust->payment_value);
+	}
+	else
+	{
+		printf("%s" ,cust->msg);
+	}
+	mutex_unlock(&report_state_mutex);
+	
+
 	if(cust->seats_index != 0)
 	{
 		free(cust->seats_index);
 	}
-	printf("\n\n-Customer#%i [Report] : Total time  = %f", tid ,total_time);
-	printf("\n            [Report] : Wait time = %f", wait_time);
-	//mutex_unlock(mutex0);
 
 	pthread_exit(cust->Id);
 }
@@ -367,6 +389,7 @@ int main(int argc , char * argv[])
 		customers[i].seats_index = 0;
 		customers[i].payment_success = 0;
 		customers[i].payment_value = 0;
+		customers[i].msg = "";
 		customers[i].error_msg = "";
 		/*
 		int seats_requested;
@@ -529,6 +552,9 @@ void Init(char * argv[])
 	rc = pthread_mutex_init(&balance_access_mutex , NULL);
 	checkOperationStatus(_mutex_init , rc , 1);
 
+	rc = pthread_mutex_init(&report_state_mutex , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
 	rc = pthread_cond_init(&av_handler_cond , NULL);
 	checkOperationStatus(_thread_cond_init , rc , 1);
 
@@ -559,6 +585,9 @@ void cleanUp()
     checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_mutex_destroy(&balance_access_mutex);
+	checkOperationStatus(_mutex_destroy , rc , 1);
+
+	rc = pthread_mutex_destroy(&report_state_mutex);
 	checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_cond_destroy(&av_handler_cond);
