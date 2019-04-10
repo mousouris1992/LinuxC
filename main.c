@@ -254,7 +254,7 @@ void * handleCustomer(void * customer)
 
 	if( approveSeatsRequest(cust , t_random))
 	{
-		cust->seat_index = malloc(cust->seats_count * sizeof(int));
+		cust->seats_index = malloc(cust->seats_count * sizeof(int));
 		/*
 		if(seats_index_buffer == 0)
 		{
@@ -290,10 +290,10 @@ void * handleCustomer(void * customer)
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
-			unBindRequestedSeats(cust->seat_index , cust->seats_count , tid);
+			unBindRequestedSeats(cust->seats_index , cust->seats_count , tid);
 			cust->payment_success = 0;
-			free(cust->seat_index);
-			cust->seat_index = 0;
+			free(cust->seats_index);
+			cust->seats_index = 0;
 			cust->error_msg = "Seats reservation cancelled | Card Payment failure!";
 			// print transfer info
 		}
