@@ -82,7 +82,7 @@ void bindRequestedSeats(Customer * cust)
 		int seat_index = cust->seats_index[i];
 		zones[cust->zoneId][ seat_index ] = cust->Id;
 	}
-	free_seats[zoneId] -= cust->seats_count;
+	free_seats[cust->zoneId] -= cust->seats_count;
 	mutex_unlock(&seats_access_mutex);
 
 }
@@ -95,7 +95,7 @@ void unBindRequestedSeats(Customer * cust)
 		int seat_index = cust->seats_index[i];
 		zones[cust->zoneId][ seat_index ] = 0;
 	}
-	free_seats[zoneId] += cust->seats_count;
+	free_seats[cust->zoneId] += cust->seats_count;
 	mutex_unlock(&seats_access_mutex);
 }
 
@@ -132,7 +132,7 @@ void * handleCustomer(void * customer)
 	t_casher_start,
 	t_global_end,
 	t_wait_end,
-	t_casher_end
+	t_casher_end;
 	clock_gettime(CLOCK_REALTIME , &t_start);
 
 
@@ -196,7 +196,7 @@ void * handleCustomer(void * customer)
 
 		if( approvePaymentRequest() )
 		{
-			int money_to_pay = cust->seats_count * c_seat;
+			int money_to_pay = cust->seats_count * zone_costs[cust->zoneId];
 			transferMoneyToAccount( money_to_pay , tid);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
