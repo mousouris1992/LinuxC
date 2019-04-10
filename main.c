@@ -115,6 +115,7 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 		{
 			if(seatsPlan[i] == 0)
 			{
+				printf("\n -- seats_index[%i] = %i" , count , i );
 				seats_index[count] = i;
 				count++;
 			}
