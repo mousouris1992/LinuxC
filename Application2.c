@@ -353,12 +353,16 @@ int main(int argc , char * argv[])
 	for(int i = 0; i<3; i++)
 	{
 		printf("\n ==========| %s |==========\n" , zoneNames[i] );
+		fprintf(output,"\n ==========| %s |==========\n" , zoneNames[i] );
+
 
 		for(int l = 0; l<zoneSize[i]; l++)
 		{
 			printf("   LINE%i " , l);
+			fprintf(output,"   LINE%i " , l);
 		}
 		printf("\n");
+		fprintf(output,"\n");
 		for(int seat = 0; seat<n_seat; seat++)
 		{
 
@@ -368,17 +372,19 @@ int main(int argc , char * argv[])
 				if(customer_id != 0)
 				{
 					printf("[%i:cust%i] " , seat , customer_id );
-					fprintf("[%i:cust%i] " , seat , customer_id );
+					fprintf(output,"[%i:cust%i] " , seat , customer_id );
 				}
 				else
 				{
 					printf("[%i:free] " , seat );
-					fprintf("[%i:free] " , seat );
+					fprintf(output,"[%i:free] " , seat );
 				}
 			}
 			printf("\n");
+			fprintf(output,"\n");
 		}
 		printf("\n\n");
+		fprintf(output,"\n\n");
 	}
 
 	fclose(output);
