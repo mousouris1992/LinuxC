@@ -48,6 +48,10 @@ int approveSeatsRequest(Customer * cust)
 					cust->seats_index[av_seats_count] = i * n_seat + j;
 					av_seats_count++;
 				}
+				else if(zones[zoneId][i * n_seat + j] != 0 && av_seats_count > 0)
+				{
+					av_seats_count = 0;
+				}
 
 				if(av_seats_count == seats_count)
 				{
@@ -232,22 +236,22 @@ void * handleCustomer(void * customer)
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
 	double wait_time_h  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
 	double wait_time_c  = (t_casher_end.tv_sec - t_casher_start.tv_sec) + (t_casher_end.tv_nsec - t_casher_start.tv_nsec) / BILLION;
+	double wait_time = (wait_time_h + wait_time_c)/2.0d;
 
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
-	m_wait_time += (wait_time_h + wait_time_c) / 2.0d ;
+	m_wait_time += wait_time;
 	m_total_time += total_time;
 
 	mutex_lock(&report_state_mutex);
 
-	/*
 	printf("\n\n   ____Customer Report____");
 	printf("\n-customerId : %i" , tid);
 	if(cust->payment_success)
 	{
 		printf("\n-Seats reservation -> succesfull ! ");
 		printf("\n      - transferId : %i" , tid);
-		printf("\n      - Seats Reserved : ");
+		printf("\n      - Seats Reserved at %s : ", zoneNames[cust->zoneId]);
 		for(int i = 0; i<cust->seats_count; i++)
 		{
 			printf(" [%i]" , cust->seats_index[i]);
@@ -259,10 +263,12 @@ void * handleCustomer(void * customer)
 		printf("\n%s" ,cust->msg);
 	}
 
-	printf("\n--Wait time  : %f" , wait_time);
+	printf("\n--Wait time on handler  : %f" , wait_time_h);
+	printf("\n--Wait time on casher   : %f" , wait_time_c);
+	printf("\n--Total wait time       : %f" , wait_time);
 	printf("\n--Total time : %f" , total_time);
 	printf("\n\n");
-	*/
+
 
 	mutex_unlock(&report_state_mutex);
 
