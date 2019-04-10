@@ -22,7 +22,7 @@ int approveSeatsRequest(Customer * cust)
 	mutex_lock(&seats_access_mutex);
 	if(free_seats[zoneId] < seats_count)
 	{
-		cust->msg = "-Seats request rejected | Reason :  not enough available seats!";
+		cust->msg = "-Seats request rejected | Reason : not enough available seats!";
 		approve = 0;
 	}
 	else
@@ -52,7 +52,7 @@ int approveSeatsRequest(Customer * cust)
 				if(av_seats_count == seats_count)
 				{
 					seats_found = 1;
-					free_seats[zoneId] -= seats_count;
+					//free_seats[zoneId] -= seats_count;
 					break;
 				}
 			}
@@ -64,15 +64,25 @@ int approveSeatsRequest(Customer * cust)
 			}
 		}
 	}
+
+	if(!approve)
+	{
+		cust->msg = "-Seats request rejected | Reason : couldn't allocate enough seats in the same line!";
+	}
 	mutex_unlock(&seats_access_mutex);
 	return approve;
 }
 
-void bindRequestedSeats(int * seats_index , int seats_requested , int customerId)
+void bindRequestedSeats(Customer * cust)
 {
 
 	mutex_lock(&seats_access_mutex);
-
+	for(int i = 0; i<cust->seats_count; i++)
+	{
+		int seat_index = cust->seats_index[i];
+		zones[cust->zoneId][ seat_index ] = cust->Id;
+	}
+	free_seats[zoneId] -= cust->seats_count;
 	mutex_unlock(&seats_access_mutex);
 
 }
@@ -80,7 +90,12 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
 {
 	mutex_lock(&seats_access_mutex);
-
+	for(int i = 0; i<cust->seats_count; i++)
+	{
+		int seat_index = cust->seats_index[i];
+		zones[cust->zoneId][ seat_index ] = 0;
+	}
+	free_seats[zoneId] += cust->seats_count;
 	mutex_unlock(&seats_access_mutex);
 }
 
@@ -169,7 +184,7 @@ void * handleCustomer(void * customer)
 		{
 			printf("[%i]" , cust->seats_index[i]);
 		}
-		/*
+
 		if( approvePaymentRequest(tid) )
 		{
 			int money_to_pay = cust->seats_count * c_seat;
@@ -188,7 +203,7 @@ void * handleCustomer(void * customer)
 			cust->msg = "-Seats reservation rejected | Card Payment failure!";
 			// print transfer info
 		}
-		*/
+		
 
 	}
 	else

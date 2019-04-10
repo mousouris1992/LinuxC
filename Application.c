@@ -31,24 +31,6 @@ int approveSeatsRequest(Customer * cust , int process_time)
 	}
 	else
 	{
-		/*
-		//seats_index = malloc( seats_requested * sizeof(int));
-		int count = 0;
-		for(int i = 0; i<n_seat; i++)
-		{
-			if(seatsPlan[i] == 0)
-			{
-				//printf("\n -- seats_index[%i] = %i" , count , i );
-				seats_index[count] = i;
-				count++;
-			}
-
-			if(count == seats_requested)
-			{
-				break;
-			}
-		}
-		*/
 		approve = 1;
 	}
 	mutex_unlock(&seats_access_mutex);
@@ -73,6 +55,7 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 
 		if(count == seats_requested)
 		{
+			free_seats -= seats_requested;
 			break;
 		}
 	}
@@ -89,6 +72,8 @@ void unBindRequestedSeats(int * seats_index , int seats_requested , int customer
 	{
 		seatsPlan[seats_index[i]] = 0;
 	}
+
+	free_seats += seats_requested;
 
 	mutex_unlock(&seats_access_mutex);
 }
