@@ -437,7 +437,7 @@ int main(int argc , char * argv[])
 
 int getRandom(int min , int max)
 {
-    return (rand()%(max - min) + min);
+    return (rand_r()%(max - min) + min);
 }
 
 
@@ -527,10 +527,10 @@ void Init(char * argv[])
 	av_customer_handlers = n_tel;
 
 	int rc;
-	srand(time(NULL)); // randomize seed
+	srand(time(argv[2])); // randomize seed
 
 	customers_count = atoi(argv[1]);
-	random_seed     = atoi(argv[2]);
+	//random_seed     = atoi(argv[2]);
 
 	// Init customers
 	customers = malloc(customers_count * sizeof(Customer));
