@@ -58,7 +58,7 @@ typedef struct Customer
 	pthread_t thread;
 
 	int Id;
-	int seats_requested;
+	int seats_count;
 	int * seats_index;
 	int payment_success;
 	int payment_value;
@@ -89,27 +89,29 @@ pthread_cond_t av_handler_cond;
 //
 //-------------------------------------
 
-int approveSeatsRequest(int * seats_index , int seats_requested , int process_time)
+int approveSeatsRequest(Customer * cust , int process_time)
 {
 
-
 	int approve;
-
-	//printf("\n-Server : processing customer's request for [%i] seconds.." , process_time );
-
 	sleep(process_time);
 
 	mutex_lock(&seats_access_mutex);
-	if(free_seats < seats_requested)
+	if(free_seats < cust->seats_count)
 	{
-		//seats_index = 0;
+		if(free_seats == 0)
+		{
+			cust->error_msg = "Seats reservation cancelled | Theatre is full!";
+		}
+		else
+		{
+			cust->error_msg = "Seats reservation cancelled | Not enough free seats!";
+		}
 		approve = 0;
 	}
 	else
 	{
+		/*
 		//seats_index = malloc( seats_requested * sizeof(int));
-
-
 		int count = 0;
 		for(int i = 0; i<n_seat; i++)
 		{
@@ -125,10 +127,9 @@ int approveSeatsRequest(int * seats_index , int seats_requested , int process_ti
 				break;
 			}
 		}
-
+		*/
 		approve = 1;
 	}
-
 	mutex_unlock(&seats_access_mutex);
 
 	return approve;
@@ -138,11 +139,21 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 {
 
 	mutex_lock(&seats_access_mutex);
-	//printf("\n - Binding requested seats...");
 
-	for(int i = 0; i<seats_requested; i++)
+	int count = 0;
+	for(int i = 0; i<n_seat; i++)
 	{
-		seatsPlan[seats_index[i]] = customerId;
+		if(seatsPlan[i] == 0)
+		{
+			seats_index[count] = i;
+			seatsPlan[i] = customerId;
+			count++;
+		}
+
+		if(count == seats_requested)
+		{
+			break;
+		}
 	}
 
 	mutex_unlock(&seats_access_mutex);
@@ -229,24 +240,21 @@ void * handleCustomer(void * customer)
 	printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 
 
-
-#define PHASE_2
-#ifdef PHASE_2
-
 	// generate random number from [n_seatMin , n_seatMax]
     // seats to be taken by current customer
-    int seats_count = getRandom(n_seatMin , n_seatMax);
+    cust->seats_count = getRandom(n_seatMin , n_seatMax);
 
     // time to fetch the request by the customerHandler
     // if (requested seats get approved) -> bind seats && payment process
     // else -> error message && current customer's handling completes
     int t_random = getRandom(1 , 5); //sleep(t_random);
-    int * seats_index_buffer = malloc(seats_count * sizeof(int));
+    cust->seats_index = 0;
 
-    printf("\n-Customer#%i : requesting [%i] seats to server!",tid , seats_count);
+    printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
 
-	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
+	if( approveSeatsRequest(cust , t_random))
 	{
+		cust->seat_index = malloc(cust->seats_count * sizeof(int));
 		/*
 		if(seats_index_buffer == 0)
 		{
@@ -262,12 +270,12 @@ void * handleCustomer(void * customer)
 		*/
 
 		// bind requested seats
-		bindRequestedSeats(seats_index_buffer , seats_count , tid);
+		bindRequestedSeats(cust->seats_index , cust->seats_count , tid);
 
 		// proceed to payment
-		printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
-		printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
-		printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
+		//printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
+		//printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
+		//printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
 
 
 		// p_cardSuccess for payment to get approved
@@ -276,21 +284,27 @@ void * handleCustomer(void * customer)
 		{
 			int money_to_pay = seats_count * c_seat;
 			transferMoneyToAccount( money_to_pay , tid);
+			cust->payment_value = money_to_pay;
+			cust->payment_success = 1;
 			// print transfer info
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
-			unBindRequestedSeats(seats_index_buffer , seats_count , tid);
+			unBindRequestedSeats(cust->seat_index , cust->seats_count , tid);
+			cust->payment_success = 0;
+			free(cust->seat_index);
+			cust->seat_index = 0;
+			cust->error_msg = "Seats reservation cancelled | Card Payment failure!";
 			// print transfer info
 		}
 
 	}
 	else
 	{
-		// print error message and exit
+
 	}
-	free(seats_index_buffer);
-#endif
+	//free(seats_index_buffer);
+
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
@@ -299,7 +313,7 @@ void * handleCustomer(void * customer)
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
-    printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
+    //printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
 	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
 	mutex_unlock(&av_handler_mutex);
 
@@ -309,8 +323,11 @@ void * handleCustomer(void * customer)
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
 
-	//printf("\nwait time : %d ", total_time);
-	//mutex_lock(mutex0);
+	/* customer Report */
+	if(cust->seats_index != 0)
+	{
+		free(cust->seats_index);
+	}
 	printf("\n\n-Customer#%i [Report] : Total time  = %f", tid ,total_time);
 	printf("\n           [Report] : Wait time = %f", wait_time);
 	//mutex_unlock(mutex0);

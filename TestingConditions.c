@@ -1,4 +1,14 @@
 
+/*
+int seats_count;
+int * seats_index;
+int payment_success;
+int payment_value;
+char * error_msg;
+*/
+
+
+
 
 #include <pthread.h>
 #include <stdio.h>
