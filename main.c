@@ -46,6 +46,7 @@ enum Operation
 int balance = 0;
 int Transactions_counter = 0;
 int seatsPlan[n_seat];
+int free_seats = n_seat;
 
 // customer handlers
 int av_customer_handlers = n_tel;
@@ -69,6 +70,8 @@ int random_seed = 0;
 pthread_mutex_t mutex0;
 pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
 pthread_mutex_t service_mutex;
+pthread_mutex_t seats_access_mutex;
+pthread_mutex_t balance_access_mutex;
 
 pthread_cond_t av_handler_cond;
 
@@ -81,10 +84,93 @@ pthread_cond_t av_handler_cond;
 //
 //-------------------------------------
 
-bool approveSeatsRequest(int count)
+int approveSeatsRequest(int * seats_index , int seats_requested , int process_time)
 {
-	return false;
+
+
+	int approve;
+
+	mutex_lock(&seats_access_mutex);
+
+	sleep(process_time);
+	if(free_seats < seats_requested)
+	{
+		seats_index = 0;
+		aprove = 0;
+	}
+	else
+	{
+		seats_index = malloc( seats_count * sizeof(int));
+		int count = 0;
+
+		for(int i = 0; i<n_seat; i++)
+		{
+			if(seatsPlan[i] == 0)
+			{
+				seats_index[count] = i;
+				count++;
+			}
+
+			if(count == seats_requested -1)
+			{
+				break;
+			}
+		}
+
+		aprove = 1;
+	}
+
+	mutex_unlock(&seats_access_mutex);
+
+	return approve;
 }
+
+void bindRequestedSeats(int * seats_index , int seats_requested , int customerId)
+{
+
+	mutex_lock(&seats_access_mutex);
+
+	for(int i = 0; i<seats_requested; i++)
+	{
+		seatsPlan[seats_index[i]] = customerId;
+	}
+
+	mutex_unlock(&seats_access_mutex);
+
+}
+
+void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
+{
+	mutex_lock(&seats_access_mutex);
+
+	for(int i = 0; i<seats_requested; i++)
+	{
+		seatsPlan[seats_index[i]] = 0;
+	}
+
+	mutex_unlock(&seats_access_mutex);
+}
+
+int approvePaymentRequest(int customerId)
+{
+	int p = getRandom(1 , 100);
+	if ( p <= p_cardSuccess)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void transferMoneyToAccount(int money , int customerId)
+{
+	mutex_lock(&balance_access_mutex);
+	balance += money;
+	mutex_unlock(&balance_access_mutex);
+}
+
 
 void * handleCustomer(void * customer)
 {
@@ -139,35 +225,45 @@ void * handleCustomer(void * customer)
 	// time to fetch the request by the customerHandler
 	// if (requested seats get approved) -> bind seats && payment process
 	// else -> error message && current customer's handling completes
-	int t_random = getRandom(t_seatMin , t_seatMax);
-	sleep(t_random);
-
-	if ( approveSeatsRequest(seats_count) )
+	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
+	int * seats_index_buffer = 0;
+	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
+		// bind requested seats
+		bindRequestedSeats(seats_index_buffer , seats_count , tid);
+
 		// proceed to payment
+		printf("\n-Server : Seats request -> approved!");
+		printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
+		printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
 
 		// p_cardSuccess for payment to get approved
 		// else seats gets replaced to seatsPlan
+		if( approvePaymentRequest(tid) )
+		{
+
+			transferMoneyToAccount( seats_count * c_seat , tid);
+			// print transfer info
+
+		}
+		else // customer's seats request gets rejected and binded seats return to the seatsPlan
+		{
+			unBindRequestedSeats(seats_index_buffer , seats_count , tid);
+			// print transfer info
+		}
+
+		free(seats_index_buffer);
 	}
 	else
 	{
-		// error message and exit
+		// print error message and exit
 	}
-
-
-	mutex_lock(&service_mutex);
-	// ...
-	// ..
-	// ..
-	// ...
-	mutex_unlock(&service_mutex);
-	sleep(2);
 
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	printf("\n\nCustomer#%i : Finished!");
+	printf("\n\nCustomer#%i : Service Finished!");
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
@@ -217,7 +313,7 @@ int main(int argc , char * argv[])
 	int rc;
 	for(int i = 0; i<customers_count; i++)
 	{
-		customers[i].Id = i;
+		customers[i].Id = i+1;
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
 		checkOperationStatus(_thread_create , rc , 1);
 	}
@@ -366,7 +462,19 @@ void Init(char * argv[])
 	rc = pthread_mutex_init(&service_mutex , NULL);
 	checkOperationStatus(_mutex_init , rc , 1);
 
+	rc = pthread_mutex_init(&seats_access_mutex , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
+	rc = pthread_mutex_init(&balance_access_mutex , NULL);
+	checkOperationStatus(_mutex_init , rc , 1);
+
 	rc = pthread_cond_init(&av_handler_cond , NULL);
 	checkOperationStatus(_thread_cond_init , rc , 1);
+
+
+	for(int i = 0; i<n_seat; i++)
+	{
+		seatsPlan[i] = 0;
+	}
 
 }
