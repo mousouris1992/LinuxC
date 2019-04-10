@@ -115,9 +115,9 @@ pthread_cond_t av_cashers_cond;
 //-------------------------------------
 
 int approveSeatsRequest(Customer * cust);
-void bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
-void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
-int approvePaymentRequest(int customerId);
+void bindRequestedSeats(Customer * cust);
+void unBindRequestedSeats(Customer * cust);
+int approvePaymentRequest();
 void transferMoneyToAccount(int money , int customerId);
 void * handleCustomer(void * customer);
 
