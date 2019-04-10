@@ -429,6 +429,7 @@ int main(int argc , char * argv[])
 
 	printf("\n\n\n -------- Theatre Report --------");
 	// print final seats Plan
+	printf("\n\n      -Total Customers handled : %i" , customers_count);
 	printf("\n      -Total Balance : %i" , balance);
 	printf("\n\n -------- Theatre SeatsPlan --------");
 	for(int i = 0; i<n_seat; i++)
