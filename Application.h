@@ -74,7 +74,7 @@ double total_execution_time;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
-pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
+pthread_mutex_t av_handler_mutex;
 pthread_mutex_t service_mutex;
 pthread_mutex_t seats_access_mutex;
 pthread_mutex_t balance_access_mutex;

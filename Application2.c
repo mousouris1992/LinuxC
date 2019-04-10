@@ -10,49 +10,59 @@
 //
 //-------------------------------------
 
-int approveSeatsRequest(Customer * cust , int process_time)
+int approveSeatsRequest(Customer * cust)
 {
 
 	int approve;
-	sleep(process_time);
+	sleep(getRandom(t_seatMin , t_seatMax));
+
+	int seats_count = cust->seats_count;
+	int zoneId = cust->zoneId;
 
 	mutex_lock(&seats_access_mutex);
-	if(free_seats < cust->seats_count)
+	if(free_seats[zoneId] < seats_count)
 	{
-		if(free_seats == 0)
-		{
-			cust->msg = "Seats reservation rejected | Theatre is full!";
-		}
-		else
-		{
-			cust->msg = "Seats reservation rejected | Not enough free seats!";
-		}
+		cust->msg = "-Seats request rejected | Reason :  not enough available seats!";
 		approve = 0;
 	}
 	else
 	{
-		/*
-		//seats_index = malloc( seats_requested * sizeof(int));
-		int count = 0;
-		for(int i = 0; i<n_seat; i++)
+		cust->seats_index = malloc( seats_count * sizeof(int));
+		if(!cust->seats_index)
 		{
-			if(seatsPlan[i] == 0)
+			printf("\n-Error : cust->seats_index::malloc() failed!");
+			printf("\n--Exiting program...");
+			exit(-1);
+		}
+
+		int seats_found = 0;
+		int av_seats_count;
+		for(int i = 0; i<zoneSize[zoneId]; i++)
+		{
+			av_seats_count = 0;
+			for(int j = 0; j<n_seat; j++)
 			{
-				//printf("\n -- seats_index[%i] = %i" , count , i );
-				seats_index[count] = i;
-				count++;
+				if(zones[zoneId][i * n_seat + j] != 0)
+				{
+					cust->seats_index[av_seats_count] = i * n_seat + j;
+					av_seats_count++;
+				}
+
+				if(av_seats_count == seats_count)
+				{
+					seats_found = 1;
+					break;
+				}
 			}
 
-			if(count == seats_requested)
+			if(seats_found)
 			{
+				approve = 1;
 				break;
 			}
 		}
-		*/
-		approve = 1;
 	}
 	mutex_unlock(&seats_access_mutex);
-
 	return approve;
 }
 
@@ -61,22 +71,6 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 
 	mutex_lock(&seats_access_mutex);
 
-	int count = 0;
-	for(int i = 0; i<n_seat; i++)
-	{
-		if(seatsPlan[i] == 0)
-		{
-			seats_index[count] = i;
-			seatsPlan[i] = customerId;
-			count++;
-		}
-
-		if(count == seats_requested)
-		{
-			break;
-		}
-	}
-
 	mutex_unlock(&seats_access_mutex);
 
 }
@@ -84,11 +78,6 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
 {
 	mutex_lock(&seats_access_mutex);
-
-	for(int i = 0; i<seats_requested; i++)
-	{
-		seatsPlan[seats_index[i]] = 0;
-	}
 
 	mutex_unlock(&seats_access_mutex);
 }
@@ -126,10 +115,6 @@ void * handleCustomer(void * customer)
 	t_wait_end;
 	clock_gettime(CLOCK_REALTIME , &t_start);
 
-	// customer enters the queue of service...
-	//printf("\n\nCustomer#%i : enters the queue!" , tid);
-	//printf("\nCustomer#%i : av_customer_handlers = %i" , tid, av_customer_handlers);
-
 
 	/*
 	  * mutex_lock()
@@ -143,10 +128,7 @@ void * handleCustomer(void * customer)
 	while(av_customer_handlers == 0)
 	{
 		// customer waits on "av_handler_cond" condition till it gets signaled from another customer whose service handling has finished
-		//printf("\nCustomer#%i : waits in queue until there is an availabe handler..", tid);
 		cond_wait(&av_handler_cond , &av_handler_mutex);
-		//printf("\nCustomer#%i : Finally is his time to get handled..", tid);
-
 	}
 
 	/* customer gets handled by a customerHandler */
@@ -156,51 +138,28 @@ void * handleCustomer(void * customer)
 	clock_gettime(CLOCK_REALTIME , &t_wait_end);
 
 
-
 	// customer is handled here..
-	//printf("\n\nCustomer#%i : is being handled by a customerHandler..." , tid);
 
-
-	// generate random number from [n_seatMin , n_seatMax]
-    // seats to be taken by current customer
-    cust->seats_count = getRandom(n_seatMin , n_seatMax);
-
-    // time to fetch the request by the customerHandler
-    // if (requested seats get approved) -> bind seats && payment process
-    // else -> error message && current customer's handling completes
-    int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
-    cust->seats_index = 0;
-
-    //printf("\n-Customer#%i : requesting [%i] seats to server!",tid , cust->seats_count);
-
-	if( approveSeatsRequest(cust , t_random))
+	// customer selects zone { A,B,C }
+    int p_zone = getRandom(1,100);
+	if(p_zone <= p_zoneB)
 	{
-		cust->seats_index = malloc(cust->seats_count * sizeof(int));
+		cust->zoneId = 1; // 1 = zoneB
+	}
+	else if(p_zone <= p_zoneB + p_zoneC)
+	{
+		cust->zoneId = 2; // 2 = zoneC
+	}
+	else
+	{
+		cust->zoneId = 0; // 0 = zoneA
+	}
+
+	// customer selects how many seats[n_seatMin , n_seatMax]
+	cust->seats_count = getRandom(n_seatMin , n_seatMax);
+	if( approveSeatsRequest(cust))
+	{
 		/*
-		if(seats_index_buffer == 0)
-		{
-			printf("\n bad memory on seats_index_buffer");
-		}
-		else
-		{
-			for(int i = 0; i < seats_count; i++)
-			{
-				printf("\n seats_index[%i] = %i" , i , seats_index_buffer[i]);
-			}
-		}
-		*/
-
-		// bind requested seats
-		bindRequestedSeats(cust->seats_index , cust->seats_count , tid);
-
-		// proceed to payment
-		//printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
-		//printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
-		//printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
-
-
-		// p_cardSuccess for payment to get approved
-		// else seats gets replaced to seatsPlan
 		if( approvePaymentRequest(tid) )
 		{
 			int money_to_pay = cust->seats_count * c_seat;
@@ -219,13 +178,14 @@ void * handleCustomer(void * customer)
 			cust->msg = "-Seats reservation rejected | Card Payment failure!";
 			// print transfer info
 		}
+		*/
 
 	}
 	else
 	{
 
 	}
-	//free(seats_index_buffer);
+
 
 
 	// again , we have to mutex_lock() in order to access shared variable
@@ -250,6 +210,7 @@ void * handleCustomer(void * customer)
 	/* customer Report */
 	mutex_lock(&report_state_mutex);
 
+	/*
 	printf("\n\n   ____Customer Report____");
 	printf("\n-customerId : %i" , tid);
 	if(cust->payment_success)
@@ -271,6 +232,7 @@ void * handleCustomer(void * customer)
 	printf("\n--Wait time  : %f" , wait_time);
 	printf("\n--Total time : %f" , total_time);
 	printf("\n\n");
+	*/
 
 	mutex_unlock(&report_state_mutex);
 
@@ -314,6 +276,7 @@ int main(int argc , char * argv[])
 	{
 		customers[i].Id = i+1;
 		customers[i].seats_count = 0;
+		customers[i].zoneId = -1;
 		customers[i].seats_index = 0;
 		customers[i].payment_success = 0;
 		customers[i].payment_value = 0;
@@ -344,26 +307,7 @@ int main(int argc , char * argv[])
 
 	printf("\n\n\n -------- Theatre Report --------");
 
-	// print final seats Plan
-	printf("\n\n      -Total Customers handled : %i" , customers_count);
-	printf("\n      -Total Balance : %i" , balance);
-	printf("\n\n -------- Theatre SeatsPlan --------");
-	for(int i = 0; i<n_seat; i++)
-	{
-		printf("\n      seat[%i] -> ",i);
-		if(seatsPlan[i] != 0)
-		{
-			printf("customer_%i" , seatsPlan[i]);
-		}
-		else
-		{
-			printf("free");
-		}
-	}
-	printf("\n");
-	printf("\n      -average wait_time    : %f" , m_wait_time);
-	printf("\n      -average total_time   : %f" , m_total_time);
-	printf("\n      -Total execution time : %f" , total_execution_time);
+
 
 	// clean up
 	cleanUp();
@@ -400,7 +344,34 @@ void Init(char * argv[])
 		exit(-1);
 	}
 
+	// Initialize availbe handlers && cashers
 	av_customer_handlers = n_tel;
+	av_customer_cashers  = n_cash;
+
+	// Initialize seats
+	zoneSize[0] = n_zoneA;
+	zoneSize[1] = n_zoneB;
+	zoneSize[2] = n_zoneC;
+
+	free_seats[0] = zoneSize[0] * n_seat;
+	free_seats[1] = zoneSize[1] * n_seat;
+	free_seats[2] = zoneSize[2] * n_seat;
+
+	for(int i = 0; i<3; i++)
+	{
+		zones[i] = malloc( free_seats[i] * sizeof(int));
+		if(!zones[i])
+		{
+			prinf("\n-Error : zones[i]::malloc() failed!");
+			printf("\n--Exiting program...");
+			exit(-1);
+		}
+
+		for(int j = 0; j<free_seats[i]; j++)
+		{
+			zones[i][j] = 0;
+		}
+	}
 
 	// Init Mutexes && cond_variables
 	int rc;
@@ -408,6 +379,9 @@ void Init(char * argv[])
 	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&av_handler_mutex , NULL);
+	checkOperationStatus(_mutex_init  , rc , 1);
+
+	rc = pthread_mutex_init(&av_cashers_mutex , NULL);
 	checkOperationStatus(_mutex_init  , rc , 1);
 
 	rc = pthread_mutex_init(&service_mutex , NULL);
@@ -425,11 +399,10 @@ void Init(char * argv[])
 	rc = pthread_cond_init(&av_handler_cond , NULL);
 	checkOperationStatus(_thread_cond_init , rc , 1);
 
+	rc = pthread_cond_init(&av_cashers_cond , NULL);
+	checkOperationStatus(_thread_cond_init , rc , 1);
 
-	for(int i = 0; i<n_seat; i++)
-	{
-		seatsPlan[i] = 0;
-	}
+
 
 }
 
@@ -446,6 +419,9 @@ void cleanUp()
 	rc = pthread_mutex_destroy(&av_handler_mutex);
 	checkOperationStatus(_mutex_destroy , rc , 1);
 
+	rc = pthread_mutex_destroy(&av_cashers_mutex);
+	checkOperationStatus(_mutex_destroy , rc , 1);
+
     rc = pthread_mutex_destroy(&service_mutex);
     checkOperationStatus(_mutex_destroy , rc , 1);
 
@@ -459,6 +435,9 @@ void cleanUp()
 	checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_cond_destroy(&av_handler_cond);
+	checkOperationStatus(_thread_cond_destroy , rc , 1);
+
+	rc = pthread_cond_destroy(&av_cashers_cond);
 	checkOperationStatus(_thread_cond_destroy , rc , 1);
 
 

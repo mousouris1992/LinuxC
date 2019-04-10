@@ -60,11 +60,15 @@ int seed;
 int balance;
 int Transactions_counter;
 int seatsPlan[n_seat];
-int free_seats;
+
+int * zones[3];
+int zoneSize[3];
+int free_seats[3];
+
 
 // customer handlers
 int av_customer_handlers; // = n_tel
-int av_customer_cahsers;
+int av_customer_cashers;
 
 typedef struct Customer
 {
@@ -72,6 +76,7 @@ typedef struct Customer
 
 	int Id;
 	int seats_count;
+	int zoneId;
 	int * seats_index;
 	int payment_success;
 	int payment_value;
@@ -94,14 +99,14 @@ double total_execution_time;
 
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
-pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
+pthread_mutex_t av_handler_mutex , av_cashers_mutex;
 pthread_mutex_t service_mutex;
 pthread_mutex_t seats_access_mutex;
 pthread_mutex_t balance_access_mutex;
 pthread_mutex_t report_state_mutex;
 
 pthread_cond_t av_handler_cond;
-pthread_cond_t av_cahsers_cond;
+pthread_cond_t av_cashers_cond;
 //-------------------------------------
 //
 //      Customer Service Functions
