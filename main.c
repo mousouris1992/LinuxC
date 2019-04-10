@@ -86,8 +86,7 @@ pthread_cond_t av_handler_cond;
 
 int approveSeatsRequest(int * seats_index , int seats_requested , int process_time)
 {
-
-
+	printf("\n-Server : about to approve seatsRequest..");
 	int approve;
 
 	mutex_lock(&seats_access_mutex);
