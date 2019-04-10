@@ -433,7 +433,7 @@ int main(int argc , char * argv[])
 	printf("\n\n -------- Theatre SeatsPlan --------");
 	for(int i = 0; i<n_seat; i++)
 	{
-		printf("\n      seat[%i] -> ");
+		printf("\n      seat[%i] -> ",i);
 		if(seatsPlan[i] != 0)
 		{
 			printf("customer_%i" , seatsPlan[i]);
