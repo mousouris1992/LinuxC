@@ -437,7 +437,7 @@ int main(int argc , char * argv[])
 
 int getRandom(int min , int max)
 {
-    return (rand_r(seed)%(max - min) + min);
+    return (rand_r(&seed)%(max - min) + min);
 }
 
 
