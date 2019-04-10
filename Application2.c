@@ -381,7 +381,7 @@ int main(int argc , char * argv[])
 		printf("\n\n");
 	}
 
-	fclose(output);)
+	fclose(output);
 
 	/*
 	printf("\n ==========| %s |==========" , zoneNames[i] );
