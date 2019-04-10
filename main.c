@@ -72,6 +72,9 @@ Customer;
 int customers_count = 0;
 Customer * customers = 0;
 
+double m_wait_time;
+double m_total_time;
+
 // Mutexes && cond_variables
 pthread_mutex_t mutex0;
 pthread_mutex_t av_handler_mutex , av_handler_mutex_2;
@@ -325,6 +328,8 @@ void * handleCustomer(void * customer)
 	double wait_time  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
 
+	m_wait_time += wait_time;
+	m_total_time += total_time;
 
 	/* customer Report */
 	mutex_lock(&report_state_mutex);
@@ -419,11 +424,33 @@ int main(int argc , char * argv[])
 	}
 	/* -------------------------------------------------- */
 
+	m_wait_time  /= (double)customers_count;
+	m_total_time /= (double)customers_count;
+
+	printf("\n\n\n -------- Theatre Report --------");
+	// print final seats Plan
+	printf("\n      -Total Balance : %i" , balance);
+	printf("\n\n -------- Theatre SeatsPlan --------");
+	for(int i = 0; i<n_seat; i++)
+	{
+		printf("\n      seat[%i] -> ");
+		if(seatsPlan[i] != 0)
+		{
+			printf("customer_%i" , seatsPlan[i]);
+		}
+		else
+		{
+			printf("free");
+		}
+	}
+	printf("\n");
+	printf("\n      -average wait_time  : %f" , m_wait_time);
+	printf("\n      -average total_time : %f" , m_total_time);
 
 	// clean up
 	cleanUp();
 
-    printf("\n");
+    printf("\n\n\n");
     return 0;
 }
 
@@ -570,6 +597,7 @@ void Init(char * argv[])
 	}
 
 }
+
 
 void cleanUp()
 {
