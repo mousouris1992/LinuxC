@@ -233,7 +233,7 @@ void * handleCustomer(void * customer)
 	// time to fetch the request by the customerHandler
 	// if (requested seats get approved) -> bind seats && payment process
 	// else -> error message && current customer's handling completes
-	int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
+	int t_random = getRandom(1 , 5); //sleep(t_random);
 	int * seats_index_buffer;
 	printf("\n-Customer#%i : requesting [%i] seats to server!",tid , seats_count);
 
