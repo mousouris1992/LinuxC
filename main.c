@@ -256,8 +256,9 @@ void * handleCustomer(void * customer)
 			unBindRequestedSeats(seats_index_buffer , seats_count , tid);
 			// print transfer info
 		}
-		free(seats_index_buffer);
+
 		*/
+		free(seats_index_buffer);
 	}
 	else
 	{
