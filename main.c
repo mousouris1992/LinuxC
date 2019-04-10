@@ -496,6 +496,7 @@ void Init(char * argv[])
 
 void cleanUp()
 {
+	int rc;
 
 	free(customers);
 
