@@ -241,16 +241,17 @@ void * handleCustomer(void * customer)
 #ifdef PHASE_2
 	if( approveSeatsRequest(seats_index_buffer , seats_count , t_random))
 	{
-		printf("\n-Server : Seats request approved for Customer#%i .. ", tid);
-		/*
+		//printf("\n-Server : Seats request approved for Customer#%i .. ", tid);
+
 		// bind requested seats
 		bindRequestedSeats(seats_index_buffer , seats_count , tid);
 
 		// proceed to payment
-		printf("\n-Server : Seats request -> approved!");
+		printf("\n-Server : Seats request of Customer#%i -> approved!" , tid);
 		printf("\n-Server : [%i] Requested seats got binded to customer#%i ... " , seats_count , tid);
 		printf("\n-Server : Proceeding with card payment with custoer#%i ..." , tid);
 
+		/*
 		// p_cardSuccess for payment to get approved
 		// else seats gets replaced to seatsPlan
 		if( approvePaymentRequest(tid) )
