@@ -329,7 +329,7 @@ void * handleCustomer(void * customer)
 		free(cust->seats_index);
 	}
 	printf("\n\n-Customer#%i [Report] : Total time  = %f", tid ,total_time);
-	printf("\n           [Report] : Wait time = %f", wait_time);
+	printf("\n            [Report] : Wait time = %f", wait_time);
 	//mutex_unlock(mutex0);
 
 	pthread_exit(cust->Id);
