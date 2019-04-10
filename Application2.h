@@ -113,7 +113,7 @@ pthread_cond_t av_cashers_cond;
 //
 //-------------------------------------
 
-int approveSeatsRequest(Customer * cust , int process_time);
+int approveSeatsRequest(Customer * cust);
 void bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
 void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
 int approvePaymentRequest(int customerId);
