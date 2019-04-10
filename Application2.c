@@ -157,6 +157,8 @@ void * handleCustomer(void * customer)
 
 	// customer selects how many seats[n_seatMin , n_seatMax]
 	cust->seats_count = getRandom(n_seatMin , n_seatMax);
+
+#ifdef PHASE_2
 	if( approveSeatsRequest(cust))
 	{
 		/*
@@ -185,21 +187,18 @@ void * handleCustomer(void * customer)
 	{
 
 	}
-
+#endif
 
 
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
-
-	//printf("\n\nCustomer#%i : Service Finished!" , tid);
 	av_customer_handlers++;
-
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
-    //printf("\n-Report : A CustomerHandler is free , next customer in queue is being signaled!");
 	pthread_cond_signal(&av_handler_cond);	//cond_broadcast(&av_handler_cond);
 	mutex_unlock(&av_handler_mutex);
 
-	//
+
+	/* ------ customer report ------- */
 	clock_gettime(CLOCK_REALTIME , &t_global_end);
 	double wait_time  = (t_wait_end.tv_sec - t_start.tv_sec) + (t_wait_end.tv_nsec - t_start.tv_nsec) / BILLION;
 	double total_time = (t_global_end.tv_sec - t_start.tv_sec) + (t_global_end.tv_nsec - t_start.tv_nsec) / BILLION;
@@ -207,7 +206,6 @@ void * handleCustomer(void * customer)
 	m_wait_time += wait_time;
 	m_total_time += total_time;
 
-	/* customer Report */
 	mutex_lock(&report_state_mutex);
 
 	/*
