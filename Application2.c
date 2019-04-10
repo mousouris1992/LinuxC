@@ -347,7 +347,7 @@ int main(int argc , char * argv[])
 	printf("\n      -Total Balance : %i" , balance);
 	printf("\n\n -------- Theatre SeatsPlan --------");
 
-	File * output;
+	FILE * output;
 	output = fopen("temp\\output.txt" , "w");
 
 	for(int i = 0; i<3; i++)
