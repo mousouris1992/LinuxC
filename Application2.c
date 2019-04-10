@@ -350,7 +350,7 @@ int main(int argc , char * argv[])
 	{
 		printf("\n ==========| %s |==========\n" , zoneNames[i] );
 
-		for(int l = 0; l<zonesSize[i]; l++)
+		for(int l = 0; l<zoneSize[i]; l++)
 		{
 			printf("LINE%i   " , l);
 		}
@@ -358,7 +358,7 @@ int main(int argc , char * argv[])
 		for(int seat = 0; seat<n_seat; seat++)
 		{
 
-			for(int line = 0; line<zonesSize[i]; line++)
+			for(int line = 0; line<zoneSize[i]; line++)
 			{
 				int customer_id = zones[i][n_seat * line + seat];
 				if(customer_id != 0)
