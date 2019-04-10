@@ -269,7 +269,7 @@ void * handleCustomer(void * customer)
 	// again , we have to mutex_lock() in order to access shared variable
 	mutex_lock(&av_handler_mutex);
 
-	printf("\n\nCustomer#%i : Service Finished!");
+	printf("\n\nCustomer#%i : Service Finished!" , tid);
 	av_customer_handlers++;
 
 	// broadcasting signal for all the customers in 'queue' so they can get handled by the free customerHandler!
