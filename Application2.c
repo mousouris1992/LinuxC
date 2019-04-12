@@ -89,12 +89,15 @@ void bindRequestedSeats(Customer * cust)
 {
 
 	mutex_lock(&seats_access_mutex);
+	// bind customer's requested seats to the seatsPlan
 	for(int i = 0; i<cust->seats_count; i++)
 	{
+		// each seat_index is stored in the customer's seats_index[]
+		// we bind each customer's seat index to the corresponding customer's zone ( customer's zoneId )
 		int seat_index = cust->seats_index[i];
 		zones[cust->zoneId][ seat_index ] = cust->Id;
 	}
-	free_seats[cust->zoneId] -= cust->seats_count;
+	free_seats[cust->zoneId] -= cust->seats_count; // subtract the binded seats count from the free seats
 	mutex_unlock(&seats_access_mutex);
 
 }
@@ -434,13 +437,11 @@ int main(int argc , char * argv[])
     return 0;
 }
 
-
 //-------------------------------------
 //
 //        Helper Functions
 //
 //-------------------------------------
-
 
 void Init(char * argv[])
 {
