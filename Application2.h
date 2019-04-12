@@ -97,13 +97,6 @@ double m_total_time;
 struct timespec t_execution_start , t_execution_end;
 double total_execution_time;
 
-// Mutexes && cond_variables
-pthread_mutex_t av_handler_mutex ,
-pthread_mutex_t seats_access_mutex;
-pthread_mutex_t balance_access_mutex;
-pthread_mutex_t report_state_mutex;
-pthread_cond_t av_handler_cond;
-
 
 // Mutexes && cond_variables
 pthread_mutex_t av_handler_mutex;        // mutex         for -> shared variable   : available_handlers
