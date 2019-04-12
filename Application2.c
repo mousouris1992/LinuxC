@@ -19,7 +19,10 @@ int approveSeatsRequest(Customer * cust)
 	int seats_count = cust->seats_count;
 	int zoneId = cust->zoneId;
 
+	// lock mutex -> access to shared variables
 	mutex_lock(&seats_access_mutex);
+
+	// check if zone's free seats < seats_requested
 	if(free_seats[zoneId] < seats_count)
 	{
 		cust->msg = "-Seats request rejected | Reason : not enough available seats!";
@@ -36,27 +39,32 @@ int approveSeatsRequest(Customer * cust)
 		}
 
 		int seats_found = 0;
-		int av_seats_count;
-		for(int i = 0; i<zoneSize[zoneId]; i++)
+		int av_seats_count; // available_seats_count
+		for(int i = 0; i<zoneSize[zoneId]; i++) // for each Line i , in zoneX
 		{
 			av_seats_count = 0;
-			for(int j = 0; j<n_seat; j++)
+			for(int j = 0; j<n_seat; j++) // for each seat j  , in Line i
 			{
+				// We are handling the 1D array : zones[zoneId][] as a 2D , thus
+				// index of seat j , at Line i equals to =  [ i * n_seat + j ]
 
+				// if seat at current Index is free ( == 0)
+				// pass the seat Index to customer's : seats_index[]
 				if(zones[zoneId][i * n_seat + j] == 0)
 				{
 					cust->seats_index[av_seats_count] = i * n_seat + j;
 					av_seats_count++;
 				}
+				// if seat at current Index is already binded discard chosen seats till now , cause we want seats
+				// to be in the same Line and continuous.
 				else if(zones[zoneId][i * n_seat + j] != 0 && av_seats_count > 0)
 				{
 					av_seats_count = 0;
 				}
-
+				// if we found enough seats -> break
 				if(av_seats_count == seats_count)
 				{
 					seats_found = 1;
-					//free_seats[zoneId] -= seats_count;
 					break;
 				}
 			}
@@ -155,6 +163,7 @@ void * handleCustomer(void * customer)
 
 	/* customer gets handled by a customerHandler */
 	av_customer_handlers--;
+
 	// mutex_unlock() - share of shared variable no more needed
 	mutex_unlock(&av_handler_mutex);
 	clock_gettime(CLOCK_REALTIME , &t_wait_end);
@@ -458,17 +467,25 @@ void Init(char * argv[])
 	av_customer_cashers  = n_cash;
 
 	// Initialize seats
+	// Each zone consists of {X} Lines each one consisting of {n_seat} seats
+	// We choose to represent each zone size only by their number of Lines
 	zoneSize[0] = n_zoneA;
 	zoneSize[1] = n_zoneB;
 	zoneSize[2] = n_zoneC;
 
+	// Initialize free seats
+	// At the start , free seats of each zone are equal to the total number of seats in its zone .
+	// Thats equal to  {X} x {n_seat} , where      {X} : is each zone's number of Lines
+	//                                        {n_seat} : is the number of seats in each Line
 	free_seats[0] = zoneSize[0] * n_seat;
 	free_seats[1] = zoneSize[1] * n_seat;
 	free_seats[2] = zoneSize[2] * n_seat;
 
+
 	for(int i = 0; i<3; i++)
 	{
-		zones[i] = malloc( free_seats[i] * sizeof(int));
+
+		zones[i] = malloc( free_seats[i] * sizeof(int)); // allocate memory for each zone
 		if(!zones[i])
 		{
 			printf("\n-Error : zones[i]::malloc() failed!");
@@ -482,27 +499,24 @@ void Init(char * argv[])
 		}
 	}
 
+	// Initialize zone costs
 	zone_costs[0] = c_zoneA;
 	zone_costs[1] = c_zoneB;
 	zone_costs[2] = c_zoneC;
 
+	// Initialize zone names
 	zoneNames[0] = "zoneA";
 	zoneNames[1] = "zoneB";
 	zoneNames[2] = "zoneC";
 
 	// Init Mutexes && cond_variables
 	int rc;
-	rc = pthread_mutex_init(&mutex0 , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&av_handler_mutex , NULL);
 	checkOperationStatus(_mutex_init  , rc , 1);
 
 	rc = pthread_mutex_init(&av_cashers_mutex , NULL);
 	checkOperationStatus(_mutex_init  , rc , 1);
-
-	rc = pthread_mutex_init(&service_mutex , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&seats_access_mutex , NULL);
 	checkOperationStatus(_mutex_init , rc , 1);
@@ -530,17 +544,12 @@ void cleanUp()
 
 	free(customers);
 
-	rc = pthread_mutex_destroy(&mutex0);
-    checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_mutex_destroy(&av_handler_mutex);
 	checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_mutex_destroy(&av_cashers_mutex);
 	checkOperationStatus(_mutex_destroy , rc , 1);
-
-    rc = pthread_mutex_destroy(&service_mutex);
-    checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_mutex_destroy(&seats_access_mutex);
     checkOperationStatus(_mutex_destroy , rc , 1);

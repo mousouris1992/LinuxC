@@ -34,7 +34,6 @@ enum Operation
 #define c_seat         20
 
 
-int seed;
 
 // business variables
 int balance;
@@ -43,29 +42,29 @@ int seatsPlan[n_seat];
 int free_seats;
 
 // customer handlers
-int av_customer_handlers; // = n_tel
+int av_customer_handlers;
 
 
+// struct defining a customer
 typedef struct Customer
 {
-	pthread_t thread;
+	pthread_t thread;              // customer's thread
 
-	int Id;
-	int seats_count;
-	int * seats_index;
-	int payment_success;
-	int payment_value;
-	char * msg;
-	char * error_msg;
+	int     Id;                    // customer's Id ( = thread's Id )
+	int     seats_count;           // number of seats requested
+	int *   seats_index;           // binded seats index
+	int     payment_success;       // 1 for card_payment success , 0 else.
+	int     payment_value;         // payment value according to the binded seats
+	char *  msg;                   //
 
 }
 Customer;
 
-
-
-int customers_count;
+// customers data structure
 Customer * customers;
+int customers_count;
 
+int seed;
 double m_wait_time;
 double m_total_time;
 
@@ -73,21 +72,19 @@ struct timespec t_execution_start , t_execution_end;
 double total_execution_time;
 
 // Mutexes && cond_variables
-pthread_mutex_t mutex0;
-pthread_mutex_t av_handler_mutex;
-pthread_mutex_t service_mutex;
-pthread_mutex_t seats_access_mutex;
-pthread_mutex_t balance_access_mutex;
-pthread_mutex_t report_state_mutex;
-
-pthread_cond_t av_handler_cond;
+pthread_mutex_t av_handler_mutex;        // mutex         for -> shared variable   : available_handlers
+pthread_mutex_t seats_access_mutex;      // mutex         for -> shared variable   : seatsPlan
+pthread_mutex_t balance_access_mutex;    // mutex         for -> shared variable   : business_balance
+pthread_mutex_t report_state_mutex;      // mutex         for -> shared state      : reporting customer's state
+pthread_cond_t av_handler_cond;          // cond_variable for -> waiting condition : on available handlers
 
 //-------------------------------------
 //
 //      Customer Service Functions
 //
 //-------------------------------------
-int     approveSeatsRequest(Customer * cust , int process_time);
+
+int     approveSeatsRequest(Customer * cust);
 void    bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
 void    unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
 int     approvePaymentRequest();

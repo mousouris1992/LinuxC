@@ -10,11 +10,11 @@
 //
 //-------------------------------------
 
-int approveSeatsRequest(Customer * cust , int process_time)
+int approveSeatsRequest(Customer * cust)
 {
 
 	int approve;
-	sleep(process_time);
+	sleep(getRandom(t_seatMin , t_seatMax));
 
 	mutex_lock(&seats_access_mutex);
 	if(free_seats < cust->seats_count)
@@ -64,7 +64,7 @@ void bindRequestedSeats(int * seats_index , int seats_requested , int customerId
 
 }
 
-void unBindRequestedSeats(int * seats_index , int seats_requested , int customerId)
+void unBindRequestedSeats(int * seats_index , int seats_requested)
 {
 	mutex_lock(&seats_access_mutex);
 
@@ -128,32 +128,26 @@ void * handleCustomer(void * customer)
 	}
 
 	/* customer gets handled by a customerHandler */
+
 	av_customer_handlers--;
-	// mutex_unlock() - share of shared variable no more needed
+	// mutex_unlock() - access on shared variable no more needed
 	mutex_unlock(&av_handler_mutex);
 	clock_gettime(CLOCK_REALTIME , &t_wait_end);
-
 
 
 	// generate random number from [n_seatMin , n_seatMax]
     // seats to be taken by current customer
     cust->seats_count = getRandom(n_seatMin , n_seatMax);
 
-    // time to fetch the request by the customerHandler
+
     // if (requested seats get approved) -> bind seats && payment process
     // else -> error message && current customer's handling completes
-    int t_random = getRandom(t_seatMin , t_seatMax); //sleep(t_random);
-    cust->seats_index = 0;
-
-
-	if( approveSeatsRequest(cust , t_random))
+	if( approveSeatsRequest(cust))
 	{
 		cust->seats_index = malloc(cust->seats_count * sizeof(int));
 
-
 		// bind requested seats
 		bindRequestedSeats(cust->seats_index , cust->seats_count , tid);
-
 
 		// p_cardSuccess for payment to get approved
 		// else seats gets replaced to seatsPlan
@@ -163,11 +157,10 @@ void * handleCustomer(void * customer)
 			transferMoneyToAccount( money_to_pay);
 			cust->payment_value = money_to_pay;
 			cust->payment_success = 1;
-
 		}
 		else // customer's seats request gets rejected and binded seats return to the seatsPlan
 		{
-			unBindRequestedSeats(cust->seats_index , cust->seats_count , tid);
+			unBindRequestedSeats(cust->seats_index , cust->seats_count);
 			cust->payment_success = 0;
 			free(cust->seats_index);
 			cust->seats_index = 0;
@@ -265,7 +258,6 @@ int main(int argc , char * argv[])
 		customers[i].payment_success = 0;
 		customers[i].payment_value = 0;
 		customers[i].msg = "";
-		customers[i].error_msg = "";
 
 		rc = pthread_create(&customers[i].thread , NULL , handleCustomer , &customers[i] );
 		checkOperationStatus(_thread_create , rc , 1);
@@ -357,14 +349,9 @@ void Init(char * argv[])
 
 	// Init Mutexes && cond_variables
 	int rc;
-	rc = pthread_mutex_init(&mutex0 , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&av_handler_mutex , NULL);
 	checkOperationStatus(_mutex_init  , rc , 1);
-
-	rc = pthread_mutex_init(&service_mutex , NULL);
-	checkOperationStatus(_mutex_init , rc , 1);
 
 	rc = pthread_mutex_init(&seats_access_mutex , NULL);
 	checkOperationStatus(_mutex_init , rc , 1);
@@ -388,14 +375,8 @@ void cleanUp()
 
 	free(customers);
 
-	rc = pthread_mutex_destroy(&mutex0);
-    checkOperationStatus(_mutex_destroy , rc , 1);
-
 	rc = pthread_mutex_destroy(&av_handler_mutex);
 	checkOperationStatus(_mutex_destroy , rc , 1);
-
-    rc = pthread_mutex_destroy(&service_mutex);
-    checkOperationStatus(_mutex_destroy , rc , 1);
 
 	rc = pthread_mutex_destroy(&seats_access_mutex);
     checkOperationStatus(_mutex_destroy , rc , 1);
