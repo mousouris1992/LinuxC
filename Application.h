@@ -86,7 +86,7 @@ pthread_cond_t av_handler_cond;          // cond_variable for -> waiting conditi
 
 int     approveSeatsRequest(Customer * cust);
 void    bindRequestedSeats(int * seats_index , int seats_requested , int customerId);
-void    unBindRequestedSeats(int * seats_index , int seats_requested , int customerId);
+void    unBindRequestedSeats(int * seats_index , int seats_requested);
 int     approvePaymentRequest();
 void    transferMoneyToAccount(int money);
 void*   handleCustomer(void * customer);
